@@ -1,0 +1,40 @@
+.matching-section {
+    background: white;
+    /* We might want a subtle background distinction, but sticking to white card on light gray bg is safer for now,
+     or maybe a very subtle gradient background for this section? */
+    background: linear-gradient(to right, #f8fafc, #f1f5f9);
+    border-radius: 24px;
+    padding: 2.5rem;
+    margin-bottom: 3rem;
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+}
+
+.matching-header {
+    margin-bottom: 2rem;
+}
+
+.badge {
+    background: linear-gradient(90deg, #2563eb, #7c3aed);
+    color: white;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    padding: 0.25rem 0.75rem;
+    border-radius: 9999px;
+    margin-bottom: 0.5rem;
+    display: inline-block;
+    letter-spacing: 0.05em;
+}
+
+.subtitle {
+    color: #6b7280;
+    margin-top: 0.5rem;
+    font-size: 1.1rem;
+}
+
+.matching-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 2rem;
+}
