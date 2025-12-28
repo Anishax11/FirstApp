@@ -84,6 +84,7 @@ const server = http.createServer(async(req, res) => {
   else if (req.url === "/matching_internships" && req.method === "GET") {
     try {
       const decoded = await verifyUser(req);
+      console.log("Called getMatchingInternships, uid is : ",decoded.uid);
       const internships = await getMatchingInternships(decoded.uid);
   
       res.writeHead(200, { "Content-Type": "application/json" });
@@ -272,26 +273,54 @@ async function saveUserProfile(uid, data) {
 
 
   async function getMatchingInternships(uid) {
+    console.log("Inside matching internships func");
+  
+    // 1️⃣ Get user
     const userDoc = await db.collection("users").doc(uid).get();
-    if (!userDoc.exists || !userDoc.data().resumeText) return [];
+    if (!userDoc.exists) return [];
   
-    const resumeText = userDoc.data().resumeText;
+    const userSkillsRaw = userDoc.data().skills || [];
   
+    // 2️⃣ Normalize user skills
+    const userSkills = userSkillsRaw.map(skill =>
+      skill.trim().toLowerCase()
+    );
+  
+    if (userSkills.length === 0) return [];
+  
+    // 3️⃣ Fetch ALL internships
     const internshipsSnap = await db.collection("internships").get();
   
     const results = [];
   
     internshipsSnap.forEach(doc => {
       const internship = doc.data();
-      // Later: call Gemini here
-      results.push({
-        id: doc.id,
-        ...internship
-      });
+  
+      const requiredSkillsRaw = internship.skillsRequired || [];
+  
+      // 4️⃣ Normalize internship skills
+      const requiredSkills = requiredSkillsRaw.map(skill =>
+        skill.trim().toLowerCase()
+      );
+  
+      // 5️⃣ Compare using NORMALIZED values ✅
+      const hasMatch = requiredSkills.some(skill =>
+        userSkills.includes(skill)
+      );
+  
+      if (hasMatch) {
+        results.push({
+          id: doc.id,
+          ...internship
+        });
+      }
     });
   
+    console.log("Matched internships:", results.length);
     return results;
   }
+  
+  
   
 
 

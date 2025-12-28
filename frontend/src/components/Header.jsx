@@ -38,9 +38,22 @@ const Header = () => {
                     <NavLink to="/opportunities" className={({ isActive }) => isActive ? "nav-link active" : "nav-link"}>
                         Opportunities
                     </NavLink>
-                    <NavLink to="/" className={({ isActive }) => isActive ? "nav-link active" : "nav-link"}>
-                        Internships
+                    <NavLink
+                    to="/internships"
+                    className={({ isActive }) => isActive ? "nav-link active" : "nav-link"}
+                    >
+                    Internships
                     </NavLink>
+                    {user && (
+                    <NavLink
+                    to="/"
+                    className={({ isActive }) =>
+                        isActive ? "nav-link active" : "nav-link"
+                    }
+                    >
+                    Recommended
+                    </NavLink>
+                )}
                 </nav>
 
                 <div className="profile-section">
