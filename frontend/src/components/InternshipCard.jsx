@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { getAuth } from 'firebase/auth';
-import Modal from './Modal'; // assuming you have a Modal component
-import { BASE_URL } from '../api'; // your backend URL
+import Modal from './Modal'; 
+import { BASE_URL } from '../api'; // backend URL
 
 const InternshipCard = ({ internship, isRecommended, userId }) => {
   const [analysis, setAnalysis] = useState('');
@@ -15,7 +15,7 @@ const InternshipCard = ({ internship, isRecommended, userId }) => {
   const skills = internship.skills || internship.skillsRequired || internship.SkillsRequired || [];
   const applyLink = internship.applyLink || internship.ApplyLink || '#';
 
-  console.log("Rendering InternshipCard for:", title);
+  // console.log("Rendering InternshipCard for:", title);
 
   const handleAnalyze = async () => {
     console.log("handleAnalyze called for internship ID:", internship.id);
@@ -25,10 +25,10 @@ const InternshipCard = ({ internship, isRecommended, userId }) => {
     try {
       const auth = getAuth();
       const user = auth.currentUser;
-      console.log("Current user:", user);
+      // console.log("Current user:", user);
 
       const token = user ? await user.getIdToken() : null;
-      console.log("User token:", token);
+      // console.log("User token:", token);
 
       if (!token) throw new Error("User not logged in");
 
@@ -60,7 +60,7 @@ if (typeof data === 'string') {
 }
       
 
-      console.log("Opening modal...");
+      // console.log("Opening modal...");
       setModalOpen(true);
     } catch (err) {
       console.error("Error in handleAnalyze:", err);

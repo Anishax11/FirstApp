@@ -10,8 +10,18 @@
 
 require('dotenv').config(); // load .env
 const fetch = require('node-fetch');const http = require('http');
+const pdfParse = require("pdf-parse");
+
 const admin = require('firebase-admin');
 const serviceAccount = require('./serviceAccountKey.json'); 
+const multer = require("multer");
+
+const upload = multer({
+  storage: multer.memoryStorage(),
+  limits: {
+    fileSize: 10 * 1024 * 1024, // 10 MB
+  },
+});
 
 // Initialize Firebase Admin SDK
 admin.initializeApp({
@@ -130,52 +140,47 @@ const server = http.createServer(async(req, res) => {
     res.end(JSON.stringify(all));
     
   }
-  else if (req.url === "/upload_resume" && req.method === "POST") {
+  else if (req.url === "/upload-resume" && req.method === "POST") {
     try {
+      console.log("1️⃣ Upload route hit");
+  
       const decoded = await verifyUser(req);
       const uid = decoded.uid;
+      console.log("2️⃣ User verified:", uid);
   
-      let body = "";
-  
-      req.on("data", chunk => {
-        body += chunk;
-      });
-  
-      req.on("end", async () => {
-        let parsed;
+      upload.single("resume")(req, res, async (err) => {
         try {
-          parsed = JSON.parse(body);
-        } catch {
-          res.writeHead(400);
-          return res.end("Invalid JSON");
+          const pdfBuffer = req.file.buffer;
+          console.log("6️⃣ Buffer length:", pdfBuffer.length);
+      
+          // Dynamically import pdf-parse
+          // const pdfModule = await import("pdf-parse");
+          // const pdfParse = pdfModule.default; // ✅ This will be the function
+      
+          const parsed = await pdfParse(pdfBuffer);
+          console.log("7️⃣ PDF parsed, text length:", parsed.text.length);
+          console.log("7️⃣ PDF parsed text :", parsed.text);
+          // Save to Firestore
+          await db.collection("users").doc(uid).set(
+            { resumeText: parsed.text, resumeUpdatedAt: Date.now() },
+            { merge: true }
+          );
+      
+          res.writeHead(200, { "Content-Type": "application/json" });
+          res.end(JSON.stringify({ success: true }));
+        } catch (e) {
+          console.error("❌ PDF parse / Firestore error:", e);
+          res.writeHead(500);
+          res.end(JSON.stringify({ error: e.message }));
         }
-  
-        const { resumeText } = parsed;
-  
-        if (!resumeText || resumeText.trim().length === 0) {
-          res.writeHead(400);
-          return res.end("resumeText is required");
-        }
-  
-        await db.collection("users").doc(uid).set(
-          {
-            resumeText,
-            resumeUploaded: true,
-            updatedAt: admin.firestore.FieldValue.serverTimestamp(),
-          },
-          { merge: true }
-        );
-  
-        res.writeHead(200, { "Content-Type": "application/json" });
-        res.end(JSON.stringify({ success: true }));
       });
+      
     } catch (err) {
+      console.error("❌ Outer error:", err);
       res.writeHead(401);
       res.end(JSON.stringify({ error: err.message }));
     }
   }
-  
-
   else if (req.url === "/analysis" && req.method === "POST") {
     try {
       const decoded = await verifyUser(req);

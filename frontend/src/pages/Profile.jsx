@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { auth, db, storage } from '../firebase';
 import { onAuthStateChanged } from 'firebase/auth';
+import { getAuth } from "firebase/auth";
 import { doc, getDoc, setDoc, updateDoc, arrayUnion } from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { useNavigate } from 'react-router-dom';
+import {BASE_URL} from '../api';
 import './Profile.css';
 
 
@@ -71,33 +73,28 @@ const Profile = () => {
     const handleResumeUpload = async (e) => {
         const file = e.target.files[0];
         if (!file) return;
-
-        if (file.type !== "application/pdf") {
-            alert("Please upload a PDF file.");
-            return;
-        }
-
-        setUploading(true);
-        try {
-            const storageRef = ref(storage, `resumes/${user.uid}_${file.name}`);
-            await uploadBytes(storageRef, file);
-            const downloadURL = await getDownloadURL(storageRef);
-
-            const userRef = doc(db, "users", user.uid);
-            await updateDoc(userRef, {
-                resumeUrl: downloadURL
-            });
-
-            setUserData(prev => ({ ...prev, resumeUrl: downloadURL }));
-            alert("Resume uploaded successfully!");
-        } catch (error) {
-            console.error("Error uploading resume:", error);
-            // In mock mode or if permissions fail
-            alert("Note: Resume upload might fail without real authentication/permissions. Check console.");
-        } finally {
-            setUploading(false);
-        }
-    };
+      
+        const auth = getAuth();
+        const token = await auth.currentUser.getIdToken();
+      
+        const formData = new FormData();
+        formData.append("resume", file);
+      
+        const res = await fetch("http://localhost:3000/upload-resume", {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          body: formData,
+        });
+      
+        const data = await res.json();
+        console.log(data);
+      };
+      
+      
+      
+      
 
     const handleAddSkills = async () => {
         if (!skillInput.trim()) return;
