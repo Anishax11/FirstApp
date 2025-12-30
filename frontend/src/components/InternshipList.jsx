@@ -35,7 +35,7 @@ const InternshipList = () => {
                 <InternshipCard
                     key={index}
                     internship={internship}
-                    isRecommended={true}
+                    isRecommended={false}
                 />
             ))}
         </div>

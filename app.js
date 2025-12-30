@@ -9,8 +9,7 @@
 // logger.log('hehe');
 
 require('dotenv').config(); // load .env
-const fetch = require('node-fetch'); // CommonJS style
-const http = require('http');
+const fetch = require('node-fetch');const http = require('http');
 const admin = require('firebase-admin');
 const serviceAccount = require('./serviceAccountKey.json'); 
 
@@ -18,9 +17,9 @@ const serviceAccount = require('./serviceAccountKey.json');
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount)
 });
-const Busboy = require("busboy");
-const fs = require("fs");
-const path = require("path");
+// const Busboy = require("busboy");
+// const fs = require("fs");
+// const path = require("path");
 const db = admin.firestore(); // now you can use Firestore
 
 const api_base = "https://orange-planets-try.loca.lt";
@@ -94,13 +93,19 @@ const server = http.createServer(async(req, res) => {
       res.end(JSON.stringify({ error: err.message }));
     }
   }
-  // else if (req.url === "/favicon.ico") {
-  //   console.log("internships");
-  //   const internships = await getInternships();
+  else if (req.url === "/matching_hackathons") {
+    try {
+      const decoded = await verifyUser(req);
+      console.log("Called getMatchingHackathons, uid is : ",decoded.uid);
+      const hackathons = await getMatchingHackathons(decoded.uid);
   
-  //   res.writeHead(200, { "Content-Type": "application/json" });
-  //   res.end(JSON.stringify(internships));
-  // }
+      res.writeHead(200, { "Content-Type": "application/json" });
+      res.end(JSON.stringify(hackathons));
+    } catch (err) {
+      res.writeHead(401);
+      res.end(JSON.stringify({ error: err.message }));
+    }
+  }
 
   else if (req.url === "/internships") {
     console.log("internships");
@@ -111,6 +116,7 @@ const server = http.createServer(async(req, res) => {
   }
 
   else if (req.url === "/hackathons") {
+    console.log("hackathons");
     const hackathons = await getHackathons();
   
     res.writeHead(200, { "Content-Type": "application/json" });
@@ -201,67 +207,61 @@ const server = http.createServer(async(req, res) => {
 });
 
 
-async function getAnalysis(userId,internshipId) {
-    const API_KEY = process.env.GEMINI_API_KEY;
-    const userDoc = await db.collection("users").doc(userId).get();
-    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${API_KEY}`;
-
-    if (!userDoc.exists) return [];
-    const resumeText = userDoc.data().resumeText;
-
-    const internshipDoc = await db.collection("internships").doc(internshipId).get();
-    const internshipSkills = internshipDoc.data().skillsRequired;
-
-    if (!API_KEY) {
-      console.error("API key not found. Please add GEMINI_API_KEY to your .env");
-      return;
-    }
-  
-    const body = {
-      contents: [
-        {
-          parts: [
-            {
-              text: `You are a career coach AI. You are given:
-    
-    1. Internship requirements: ${internshipSkills}
-    2. User resume: ${resumeText}
-    
-    Please do the following:
-    
-    1. Identify and list the core skills the user already has that match the internship requirements.
-    2. Identify optional skills that would improve the user's chances but are not strictly required.
-    3. Identify missing skills that the user does not have but are required for the internship.
-    4. Provide a match percentage or probability score estimating how suitable the user is for this internship.
-    5. Give a roadmap or guide for the user to acquire the missing skills to increase their chances.
-    
-    Return the output in clear, structured JSON with keys: coreSkills, optionalSkills, missingSkills, matchPercent, and roadmap.`
-            }
-          ]
-        }
-      ]
-    };
-    
+  async function getAnalysis(userId, internshipId) {
     try {
-      const response = await fetch(url, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(body)
-      });
+      const fetch = (...args) => import('node-fetch').then(({default: fetch}) => fetch(...args));
+      const userDoc = await db.collection("users").doc(userId).get();
+      if (!userDoc.exists) return "User resume not found";
+      const resumeText = userDoc.data().resumeText;
     
-      const data = await response.json();
-    
-      // Extract just the AI text
-      const aiText = data?.candidates?.[0]?.content?.parts?.[0]?.text;
-      if (aiText) {
-        console.log(aiText);
-      } else {
-        console.log("No text found in response:", data);
-      }
+      const internshipDoc = await db.collection("internships").doc(internshipId).get();
+      if (!internshipDoc.exists) return "Internship not found";
+      const internshipSkills = internshipDoc.data().skillsRequired;
+      const res = await fetch(
+        "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "x-goog-api-key": process.env.GEMINI_API_KEY
+          },
+          body: JSON.stringify({
+            contents: [
+              {
+                role: "user",
+                parts: [{ text: `You are a career coach AI.
+
+                Internship requirements:
+                ${internshipSkills}
+                
+                User resume:
+                ${resumeText}
+                
+                Analyze the match and explain it in plain text.`}]
+              }
+            ]
+          })
+        }
+      );
+  
+      const data = await res.json();
+
+// ✅ Extract text from candidates array
+const aiText =
+  data?.candidates?.[0]?.content?.parts?.map(p => p.text).join("\n") || "No analysis returned";
+
+console.log("analysis:", aiText);
+console.log("FULL GEMINI RESPONSE:", aiText);
+
+return aiText;
+      
     } catch (err) {
-      console.error("Fetch failed:", err);
+      console.error("Gemini fetch failed:", err);
+      return { error: err.message };
     }
-}
+  }
+  
+
 
 async function saveUserProfile(uid, data) {
 
@@ -320,6 +320,53 @@ async function saveUserProfile(uid, data) {
     return results;
   }
   
+  async function getMatchingHackathons(uid) {
+    console.log("Inside matching hackathons func");
+  
+    // 1️⃣ Get user
+    const userDoc = await db.collection("users").doc(uid).get();
+    if (!userDoc.exists) return [];
+  
+    const userSkillsRaw = userDoc.data().skills || [];
+  
+    // 2️⃣ Normalize user skills
+    const userSkills = userSkillsRaw.map(skill =>
+      skill.trim().toLowerCase()
+    );
+  
+    if (userSkills.length === 0) return [];
+  
+    // 3️⃣ Fetch ALL hackathons
+    const hackathonsSnap = await db.collection("hackathons").get();
+  
+    const results = [];
+  
+    hackathonsSnap.forEach(doc => {
+      const hackathon = doc.data();
+  
+      const requiredSkillsRaw = hackathon.skillsRequired || [];
+  
+      // 4️⃣ Normalize skills
+      const requiredSkills = requiredSkillsRaw.map(skill =>
+        skill.trim().toLowerCase()
+      );
+  
+      // 5️⃣ Compare using NORMALIZED values ✅
+      const hasMatch = requiredSkills.some(skill =>
+        userSkills.includes(skill)
+      );
+  
+      if (hasMatch) {
+        results.push({
+          id: doc.id,
+          ...hackathon
+        });
+      }
+    });
+  
+    console.log("Matched hackathons:", results.length);
+    return results;
+  }
   
   
 
@@ -341,7 +388,7 @@ async function getInternships() {
 }
 
 
-async function getHackathons() {
+async function getAllOpportunities() {
   
 
   const hackathonsRef = db.collection("hackathons");
@@ -370,7 +417,7 @@ async function getHackathons() {
 }
 
 
-async function getAllOpportunities() {
+async function getHackathons() {
   
 
   const hackathonsRef = db.collection("hackathons");

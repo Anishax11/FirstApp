@@ -2,7 +2,9 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Header from './components/Header';
 import MatchingInternships from './components/MatchingInternships';
+import MatchingHackathons from "./components/MatchingHackathons";
 import InternshipList from './components/InternshipList';
+import HackathonList from './components/HackathonList';
 import Profile from './pages/Profile';
 import About from './pages/About';
 import Opportunities from './pages/Opportunities';
@@ -26,17 +28,13 @@ function App() {
               <Route path="/about" element={<About />} />
               <Route path="/opportunities" element={<Opportunities />} />
               <Route path="/internships" element={<InternshipList />} />
+              <Route path="/hackathons" element={<HackathonList />} />
 
               {/* Protected Routes */}
               <Route element={<ProtectedRoute />}>
-                <Route path="/" element={
-                  <>
-                    <MatchingInternships />
-                    
-                  </>
-                } />
+                <Route path="/" element={<MatchingInternships />} />
+                <Route path="/matching-hackathons" element={<MatchingHackathons />} />
                 <Route path="/profile" element={<Profile />} />
-                
               </Route>
             </Routes>
           </main>
@@ -47,3 +45,5 @@ function App() {
 }
 
 export default App;
+
+

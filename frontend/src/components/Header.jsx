@@ -44,15 +44,28 @@ const Header = () => {
                     >
                     Internships
                     </NavLink>
-                    {user && (
+
+                     
                     <NavLink
-                    to="/"
-                    className={({ isActive }) =>
-                        isActive ? "nav-link active" : "nav-link"
-                    }
+                        to="/hackathons"
+                        className={({ isActive }) => isActive ? "nav-link active" : "nav-link"}
                     >
-                    Recommended
+                        Hackathons
                     </NavLink>
+
+                    {user && (
+    <>
+                    <NavLink to="/" className={({ isActive }) => isActive ? "nav-link active" : "nav-link"}>
+                        Recommended Internships
+                    </NavLink>
+
+                    <NavLink
+                        to="/matching-hackathons"
+                        className={({ isActive }) => isActive ? "nav-link active" : "nav-link"}
+                    >
+                        Recommended Hackathons
+                    </NavLink>
+                    </>
                 )}
                 </nav>
 
