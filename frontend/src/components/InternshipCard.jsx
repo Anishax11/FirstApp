@@ -38,7 +38,11 @@ const InternshipCard = ({ internship, isRecommended, userId }) => {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`
         },
-        body: JSON.stringify({ internshipId: internship.id })
+        body: JSON.stringify({
+          internshipId: internship.id,
+          type: "internship"
+        })
+        
       });
 
       console.log("Fetch response status:", response.status);

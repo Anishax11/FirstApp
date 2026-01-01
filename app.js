@@ -186,21 +186,46 @@ const server = http.createServer(async(req, res) => {
       const decoded = await verifyUser(req);
       const uid = decoded.uid;
   
-      // Read request body
       let body = "";
       req.on("data", chunk => (body += chunk));
+  
       req.on("end", async () => {
-        const { internshipId } = JSON.parse(body);
+        try {
+          const { internshipId, hackathonId, type } = JSON.parse(body);
   
-        if (!internshipId) {
-          res.writeHead(400);
-          return res.end("Missing internshipId");
+          // Basic validation
+          if (!type) {
+            res.writeHead(400);
+            return res.end(JSON.stringify({ error: "Missing type" }));
+          }
+  
+          const itemId = internshipId || hackathonId;
+  
+          if (!itemId) {
+            res.writeHead(400);
+            return res.end(
+              JSON.stringify({ error: "Missing internshipId or hackathonId" })
+            );
+          }
+  
+          const analysis = await getAnalysis({
+            userId: uid,
+            itemId,
+            type
+          });
+  
+          res.writeHead(200, { "Content-Type": "application/json" });
+          res.end(
+            JSON.stringify({
+              success: true,
+              analysis
+            })
+          );
+        } catch (err) {
+          console.error("Analysis error:", err);
+          res.writeHead(500);
+          res.end(JSON.stringify({ error: err.message }));
         }
-  
-        const analysis = await getAnalysis(uid, internshipId);
-  
-        res.writeHead(200, { "Content-Type": "application/json" });
-        res.end(JSON.stringify(analysis));
       });
     } catch (err) {
       res.writeHead(401);
@@ -212,60 +237,122 @@ const server = http.createServer(async(req, res) => {
 });
 
 
-  async function getAnalysis(userId, internshipId) {
-    try {
-      const fetch = (...args) => import('node-fetch').then(({default: fetch}) => fetch(...args));
-      const userDoc = await db.collection("users").doc(userId).get();
-      if (!userDoc.exists) return "User resume not found";
-      const resumeText = userDoc.data().resumeText;
-    
-      const internshipDoc = await db.collection("internships").doc(internshipId).get();
-      if (!internshipDoc.exists) return "Internship not found";
-      const internshipSkills = internshipDoc.data().skillsRequired;
-      const res = await fetch(
-        "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "x-goog-api-key": process.env.GEMINI_API_KEY
-          },
-          body: JSON.stringify({
-            contents: [
-              {
-                role: "user",
-                parts: [{ text: `You are a career coach AI.
+async function getAnalysis({ userId, itemId, type }) {
+  try {
+    console.log("Getting analysis for:", type, itemId);
 
-                Internship requirements:
-                ${internshipSkills}
-                
-                User resume:
-                ${resumeText}
-                
-                Analyze the match and explain it in plain text.`}]
-              }
-            ]
-          })
-        }
-      );
-  
-      const data = await res.json();
+    const fetch = (...args) =>
+      import("node-fetch").then(({ default: fetch }) => fetch(...args));
 
-// ✅ Extract text from candidates array
-const aiText =
-  data?.candidates?.[0]?.content?.parts?.map(p => p.text).join("\n") || "No analysis returned";
+    // 1️⃣ Get user data
+    const userDoc = await db.collection("users").doc(userId).get();
+    if (!userDoc.exists) return "User resume not found";
 
-console.log("analysis:", aiText);
-console.log("FULL GEMINI RESPONSE:", aiText);
+    const userData = userDoc.data();
+    const resumeText = userData.resumeText || "No resume text provided";
+    const userSkills = userData.skills || [];
 
-return aiText;
-      
-    } catch (err) {
-      console.error("Gemini fetch failed:", err);
-      return { error: err.message };
+    // 2️⃣ Determine collection
+    let collectionName;
+    let promptContext;
+
+    if (type === "internship") {
+      collectionName = "internships";
+      promptContext = "Internship details";
+    } else if (type === "hackathon") {
+      collectionName = "hackathons";
+      promptContext = "Hackathon details";
+    } else {
+      return "Invalid analysis type";
     }
+
+    // 3️⃣ Get item data
+    const itemDoc = await db.collection(collectionName).doc(itemId).get();
+    if (!itemDoc.exists) return `${type} not found`;
+
+    const itemData = itemDoc.data();
+
+    const description =
+      itemData.description ||
+      itemData.Description ||
+      "No description provided";
+
+    const skillsRequired =
+      itemData.skillsRequired ||
+      itemData.skills ||
+      itemData.themes ||
+      itemData.domains ||
+      [];
+
+    // 4️⃣ Gemini request
+    const res = await fetch(
+      "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "x-goog-api-key": process.env.GEMINI_API_KEY
+        },
+        body: JSON.stringify({
+          contents: [
+            {
+              role: "user",
+              parts: [
+                {
+                  text: `You are a career coach AI.
+
+${promptContext}:
+Description:
+${description}
+
+Required skills:
+${Array.isArray(skillsRequired) ? skillsRequired.join(", ") : skillsRequired}
+
+User profile:
+Resume:
+${resumeText}
+
+User skills:
+${Array.isArray(userSkills) ? userSkills.join(", ") : userSkills}
+
+Analyze how suitable this opportunity is for the user.
+Explain:
+- Skill match
+- Missing skills
+- Strengths
+- Whether they should apply/participate
+
+Skill interpretation rules:
+- Treat skill names semantically, not literally.
+- Consider common variants equivalent (e.g., Node.js, NodeJS, node js, nodejs).
+- If a skill appears in the user's skill list, assume the user has it.
+- Do NOT mark a skill as missing if it is a semantic match.
+
+Respond in plain text.`
+                }
+              ]
+            }
+          ]
+        })
+      }
+    );
+
+    const data = await res.json();
+
+    const aiText =
+      data?.candidates?.[0]?.content?.parts
+        ?.map(p => p.text)
+        .join("\n") || "No analysis returned";
+
+    console.log("Analysis result:", aiText);
+    return aiText;
+
+  } catch (err) {
+    console.error("Gemini fetch failed:", err);
+    return "Analysis failed. Please try again later.";
   }
-  
+}
+
 
 
 async function saveUserProfile(uid, data) {
