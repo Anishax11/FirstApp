@@ -1,4 +1,4 @@
-.internship-card {
+/* .hackathon-card {
     background: white;
     border-radius: 20px;
     padding: 1.75rem;
@@ -12,34 +12,176 @@
     transition: transform 0.25s ease, box-shadow 0.25s ease;
   }
   
-  .internship-card:hover {
+  .hackathon-card:hover {
     transform: translateY(-6px);
     box-shadow: 0 16px 40px rgba(0, 0, 0, 0.1);
   }
   
-  .internship-card.recommended {
+  .hackathon-card {
+    height: 280px;              /* adjust once, then forget */
+    /* max-height: 280px;
+  }
+  
+  .hackathon-card.recommended {
     border: 2px solid #8b5cf6;
     background: linear-gradient(145deg, #ffffff, #f5f3ff);
   }
   
   /* Header */
-  .card-header {
+  /* .card-header {
     display: flex;
-    flex-direction: column;
-    gap: 0.25rem;
+    flex-direction: column; */
+    /* gap: 0.25rem;
   }
   
-  .internship-title {
+  .hackathon-title {
     font-size: 1.25rem;
     font-weight: 700;
     color: #111827;
   }
   
-  .company-name {
+  .organizer-name {
     font-size: 0.95rem;
     font-weight: 500;
     color: #6b7280;
+  } */
+  
+  /* Description */
+  /* .description {
+    font-size: 0.95rem;
+    line-height: 1.5;
+    color: #4b5563;
+  } */
+  
+  
+  /* Skills */
+  /* .skills-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
   }
+  
+  .skill-tag {
+    background: #eff6ff;
+    color: #2563eb;
+    padding: 0.3rem 0.75rem;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 600;
+  }
+   */
+  /* Match */
+  /* .match-reason {
+    background: #ede9fe;
+    color: #6d28d9;
+    padding: 0.6rem 0.8rem;
+    border-radius: 12px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+  } */
+  
+  /* Actions */
+  /* .card-actions {
+    display: flex;
+    gap: 0.75rem;
+    margin-top: auto;
+  }
+   */
+  /* Register button */
+  /* .register-btn {
+    flex: 1;
+    background: linear-gradient(135deg, #2563eb, #7c3aed);
+    color: white;
+    border: none;
+    padding: 0.8rem 1rem;
+    border-radius: 9999px;
+    font-weight: 600;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+  }
+  
+  .register-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 8px 20px rgba(124, 58, 237, 0.35);
+  } */
+  
+  /* Analyze button */
+  /* .analyze-btn {
+    flex: 1;
+    background: #f5f3ff;
+    color: #6d28d9;
+    border: 2px solid #ddd6fe;
+    padding: 0.8rem 1rem;
+    border-radius: 9999px;
+    font-weight: 600;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: background 0.2s ease, transform 0.15s ease;
+  }
+  
+  .analyze-btn:hover {
+    background: #ede9fe;
+    transform: translateY(-1px);
+  }
+  
+  .analyze-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  } */
+  
+  /* Error */
+  /* .error {
+    color: #dc2626;
+    font-size: 0.85rem;
+  }
+   */ */ */
+
+  .hackathon-card {
+    background: white;
+    border-radius: 20px;
+    padding: 1.75rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  
+    border: 1px solid rgba(229, 231, 235, 0.8);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+  
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+  }
+  
+  .hackathon-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.1);
+  }
+  
+  .hackathon-card.recommended {
+    border: 2px solid #8b5cf6;
+    background: linear-gradient(145deg, #ffffff, #f5f3ff);
+  }
+  
+  /* Header */
+  .hackathon-header {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+  
+  .hackathon-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #111827;
+  }
+  
+  /* .company-name {
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: #6b7280;
+  } */
   
   /* Description */
   .description {
@@ -83,53 +225,3 @@
     gap: 0.75rem;
     margin-top: auto;
   }
-  
-  /* Apply button */
-  .apply-btn {
-    flex: 1;
-    background: linear-gradient(135deg, #2563eb, #7c3aed);
-    color: white;
-    border: none;
-    padding: 0.8rem 1rem;
-    border-radius: 9999px;
-    font-weight: 600;
-    font-size: 0.95rem;
-    cursor: pointer;
-    transition: transform 0.15s ease, box-shadow 0.15s ease;
-  }
-  
-  .apply-btn:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 8px 20px rgba(124, 58, 237, 0.35);
-  }
-  
-  /* Analyze button */
-  .analyze-btn {
-    flex: 1;
-    background: #f5f3ff;
-    color: #6d28d9;
-    border: 2px solid #ddd6fe;
-    padding: 0.8rem 1rem;
-    border-radius: 9999px;
-    font-weight: 600;
-    font-size: 0.95rem;
-    cursor: pointer;
-    transition: background 0.2s ease, transform 0.15s ease;
-  }
-  
-  .analyze-btn:hover {
-    background: #ede9fe;
-    transform: translateY(-1px);
-  }
-  
-  .analyze-btn:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
-  }
-  
-  /* Error */
-  .error {
-    color: #dc2626;
-    font-size: 0.85rem;
-  }
-  

@@ -30,12 +30,11 @@ const HackathonList = () => {
   if (error) return <p>Error: {error}</p>;
 
   return (
-    <div className="hackathon-grid">
-      {hackathons.map((hackathon, index) => (
+    <div className="hackathons-container">
+      {hackathons.map((hackathon) => (
         <HackathonCard
-          key={index}
+          key={hackathon.id}
           hackathon={hackathon}
-          isRecommended={false} // badge hidden for all hackathons
         />
       ))}
     </div>

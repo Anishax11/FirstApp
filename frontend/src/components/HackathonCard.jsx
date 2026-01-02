@@ -1,28 +1,25 @@
-import { useState } from 'react';
-import { getAuth } from 'firebase/auth';
-import Modal from './Modal';
-import { BASE_URL } from '../api';
+import { useState } from "react";
+import { getAuth } from "firebase/auth";
+import Modal from "./Modal";
+import { BASE_URL } from "../api";
+import "./HackathonCard.css";
 
 const HackathonCard = ({ hackathon, isRecommended }) => {
-  const [analysis, setAnalysis] = useState('');
+  const [analysis, setAnalysis] = useState("");
   const [loading, setLoading] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
   const [error, setError] = useState(null);
 
-  // Normalizing fields (handles different backend keys)
   const title = hackathon.title || hackathon.Title || "No Title";
   const organizer = hackathon.organizer || hackathon.Organizer || "Unknown Organizer";
-  const description =
-    hackathon.description || hackathon.Description || "No Description";
-  const themes =
-    hackathon.themes || hackathon.domains || hackathon.Themes || [];
+  const description = hackathon.description || hackathon.Description || "No Description";
+  const themes = hackathon.themes || hackathon.domains || hackathon.Themes || [];
   const startDate = hackathon.startDate || hackathon.StartDate;
   const endDate = hackathon.endDate || hackathon.EndDate;
-  const registerLink =
-    hackathon.registerLink || hackathon.RegistrationLink || "#";
-    const skillsRequired = hackathon.skillsRequired ;
+  const registerLink = hackathon.registerLink || hackathon.RegistrationLink || "#";
+  const skillsRequired = hackathon.skillsRequired || [];
+
   const handleAnalyze = async () => {
-    console.log("Analyzing hackathon ID:", hackathon.id);
     setLoading(true);
     setError(null);
 
@@ -41,26 +38,16 @@ const HackathonCard = ({ hackathon, isRecommended }) => {
         },
         body: JSON.stringify({
           hackathonId: hackathon.id,
-          type: "hackathon", // useful if backend distinguishes
+          type: "hackathon",
         }),
       });
 
       if (!response.ok) throw new Error(`HTTP ${response.status}`);
 
       const data = await response.json();
-      console.log("Hackathon analysis response:", data);
-
-      if (typeof data === "string") {
-        setAnalysis(data);
-      } else if (data.success) {
-        setAnalysis(data.analysis || "No analysis available.");
-      } else {
-        setAnalysis("No analysis available.");
-      }
-
+      setAnalysis(data.analysis || "No analysis available.");
       setModalOpen(true);
     } catch (err) {
-      console.error(err);
       setError(err.message);
     } finally {
       setLoading(false);
@@ -73,19 +60,18 @@ const HackathonCard = ({ hackathon, isRecommended }) => {
       <p className="organizer">{organizer}</p>
 
       {(startDate || endDate) && (
-        <p className="dates">
-          🗓 {startDate || "?"} – {endDate || "?"}
-        </p>
+        <p className="dates">🗓 {startDate || "?"} – {endDate || "?"}</p>
       )}
 
       <p>{description}</p>
+
       {skillsRequired.length > 0 && (
-  <div className="skills-container">
-    {skillsRequired.map((skill, i) => (
-      <span key={i} className="skill-tag">{skill}</span>
-    ))}
-  </div>
-)}
+        <div className="skills-container">
+          {skillsRequired.map((skill, i) => (
+            <span key={i} className="skill-tag">{skill}</span>
+          ))}
+        </div>
+      )}
 
       {themes.length > 0 && (
         <div className="themes-container">
@@ -96,16 +82,22 @@ const HackathonCard = ({ hackathon, isRecommended }) => {
       )}
 
       {isRecommended && (
-        <p className="match-reason">🚀 Recommended based on your profile</p>
+        <div className="match-reason">🚀 Recommended based on your profile</div>
       )}
 
-      <a href={registerLink} target="_blank" rel="noopener noreferrer">
-        <button>Register</button>
-      </a>
+      <div className="card-actions">
+        <a href={registerLink} target="_blank" rel="noopener noreferrer">
+          <button className="register-btn">Register</button>
+        </a>
 
-      <button onClick={handleAnalyze} disabled={loading}>
-        {loading ? "Analyzing..." : "Analyze"}
-      </button>
+        <button
+          className="analyze-btn"
+          onClick={handleAnalyze}
+          disabled={loading}
+        >
+          {loading ? "Analyzing..." : "Analyze"}
+        </button>
+      </div>
 
       {error && <p className="error">{error}</p>}
 
