@@ -20,10 +20,10 @@ const MatchingHackathons = () => {
         setLoading(false);
       }
     };
-  
+
     loadMatchingHackathons();
   }, [auth.currentUser]);
-  
+
 
   if (loading) return null;
   if (matchingHackathons.length === 0) return null;
@@ -31,7 +31,7 @@ const MatchingHackathons = () => {
   return (
     <section className="matching-section">
       <div className="matching-header">
-        <span className="badge">For You</span>
+        <span className="badge">FOR YOU</span>
         <h2 className="section-title">Recommended Hackathons</h2>
         <p className="subtitle">Curated based on your profile and interests</p>
       </div>

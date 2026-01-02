@@ -1,30 +1,69 @@
 .modal-overlay {
   position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.5);
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.6);
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 1000;
+  z-index: 9999;
 }
 
 .modal-content {
   background: #fff;
   width: 90%;
-  max-width: 600px;
-  max-height: 80vh;        /*  REQUIRED */
+  max-width: 650px;
+  max-height: 85vh;
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+  /* Remove padding from container */
+  border-radius: 16px;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  animation: modalFadeIn 0.2s ease-out;
+  overflow: hidden;
+  /* Prevent overall overflow */
+}
+
+@keyframes modalFadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.modal-header {
   padding: 1.5rem;
-  border-radius: 8px;
-  position: relative;
-  display: flex;           /*  REQUIRED */
-  flex-direction: column;  /*  REQUIRED */
+  border-bottom: 1px solid #e2e8f0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.modal-header h3 {
+  margin: 0;
+  font-size: 1.25rem;
+  color: #0f172a;
+  font-weight: 700;
 }
 
 .modal-body {
-  overflow-y: auto;        /*  REQUIRED */
-  margin-top: 1rem;
-  white-space: pre-wrap;   /*  preserves Gemini line breaks */
-  line-height: 1.5;
+  overflow-y: auto;
+  padding: 1.5rem;
+  /* Add padding here so scrollbar is at edge */
+  flex: 1;
+  /* Take remaining space */
+  white-space: pre-wrap;
+  line-height: 1.6;
+  color: #334155;
+  font-size: 0.95rem;
 }
 
 .close-btn {

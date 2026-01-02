@@ -1,0 +1,199 @@
+/* OpportunityCard.css */
+.opportunity-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-lg);
+    padding: 24px;
+    box-shadow: var(--shadow-sm);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    position: relative;
+    overflow: hidden;
+}
+
+.opportunity-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-lg);
+    border-color: #cbd5e1;
+}
+
+.opportunity-card.recommended {
+    border: 1px solid #818cf8;
+    /* Subtle indigo border */
+    background: linear-gradient(to bottom, #ffffff, #f5f3ff);
+}
+
+.opportunity-card.recommended::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 4px;
+    height: 100%;
+    background: var(--primary);
+}
+
+/* Header Section */
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 0.75rem;
+    gap: 1rem;
+}
+
+.card-title {
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--text-main);
+    line-height: 1.4;
+    margin: 0;
+}
+
+.type-badge {
+    background: #f1f5f9;
+    color: var(--text-muted);
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    padding: 4px 10px;
+    border-radius: 6px;
+    letter-spacing: 0.05em;
+    flex-shrink: 0;
+}
+
+.type-badge.internship {
+    background: #e0e7ff;
+    /* light indigo */
+    color: var(--primary);
+}
+
+.type-badge.hackathon {
+    background: #fce7f3;
+    /* light pink/rose */
+    color: #db2777;
+}
+
+/* Meta Info */
+.card-meta {
+    margin-bottom: 1.25rem;
+}
+
+.company-name {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--secondary);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.25rem;
+}
+
+.meta-dates {
+    font-size: 0.85rem;
+    color: var(--text-light);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+/* Description */
+.card-description {
+    font-size: 0.95rem;
+    color: var(--text-muted);
+    line-height: 1.6;
+    margin-bottom: 1.5rem;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    flex-grow: 1;
+    /* Pushes footer down */
+}
+
+/* Skills */
+.skills-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.skill-pill {
+    background: #f8fafc;
+    color: var(--secondary);
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 4px 10px;
+    border-radius: 999px;
+    border: 1px solid var(--border-subtle);
+}
+
+/* Recommended Badge in Content */
+.match-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    background: #ecfdf5;
+    /* emerald-50 */
+    color: var(--accent-success);
+    font-size: 0.8rem;
+    font-weight: 600;
+    padding: 4px 12px;
+    border-radius: 999px;
+    margin-bottom: 1rem;
+    border: 1px solid #a7f3d0;
+}
+
+/* Action Buttons */
+.card-actions {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 0.75rem;
+    margin-top: auto;
+    /* Ensures it stays at bottom */
+    padding-top: 1rem;
+    border-top: 1px solid var(--border-subtle);
+}
+
+.btn-secondary {
+    /* Uses global btn-secondary from index.css unless overridden */
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    padding: 0.5rem 1rem;
+}
+
+.btn-secondary:hover {
+    color: var(--text-main);
+    background: #f1f5f9;
+}
+
+.btn-primary {
+    /* Uses global btn-primary from index.css */
+    font-size: 0.9rem;
+    padding: 0.5rem 1rem;
+}
+
+/* Spinner */
+.spinner {
+    display: inline-block;
+    width: 14px;
+    height: 14px;
+    border: 2px solid rgba(0, 0, 0, 0.1);
+    border-radius: 50%;
+    border-top-color: currentColor;
+    animation: spin 1s ease-in-out infinite;
+    margin-right: 8px;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}

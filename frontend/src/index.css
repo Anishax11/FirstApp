@@ -1,17 +1,40 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
 
 :root {
-    font-family: 'Inter', system-ui, Avenir, Helvetica, Arial, sans-serif;
-    line-height: 1.5;
-    font-weight: 400;
+    /* --- COLOR PALETTE --- */
+    /* Primary: Indigo / Royal Blue */
+    --primary: #4F46E5;
+    --primary-hover: #4338ca;
 
-    color: #1f2937;
-    background-color: #f3f4f6;
+    /* Secondary / Neutral */
+    --secondary: #64748B;
+    --secondary-hover: #475569;
 
-    font-synthesis: none;
-    text-rendering: optimizeLegibility;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
+    /* Backgrounds */
+    --bg-body: #F8FAFC;
+    --bg-card: #FFFFFF;
+
+    /* Text */
+    --text-main: #1e293b;
+    --text-muted: #64748B;
+    --text-light: #94a3b8;
+
+    /* Accents */
+    --accent-success: #10B981;
+    --accent-warning: #F59E0B;
+    --accent-error: #EF4444;
+
+    /* Borders & Shadows */
+    --border-subtle: #e2e8f0;
+    --radius-md: 12px;
+    --radius-lg: 16px;
+    --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+    --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+    --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+
+    /* Typography */
+    --font-heading: 'Inter', system-ui, sans-serif;
+    --font-body: 'Inter', system-ui, sans-serif;
 }
 
 * {
@@ -22,7 +45,12 @@ body {
     margin: 0;
     padding: 0;
     min-height: 100vh;
-    background: linear-gradient(to bottom right, #f3f4f6, #e5e7eb);
+    font-family: var(--font-body);
+    background-color: var(--bg-body);
+    color: var(--text-main);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
 }
 
 h1,
@@ -32,8 +60,171 @@ h4,
 h5,
 h6 {
     margin: 0;
+    font-family: var(--font-heading);
+    font-weight: 700;
+    line-height: 1.2;
+    color: #0f172a;
+}
+
+h1 {
+    font-size: 2.25rem;
+    letter-spacing: -0.025em;
+}
+
+h2 {
+    font-size: 1.875rem;
+    letter-spacing: -0.025em;
+}
+
+h3 {
+    font-size: 1.5rem;
+    letter-spacing: -0.025em;
+}
+
+p {
+    margin: 0 0 1rem 0;
 }
 
 button {
     font-family: inherit;
+    cursor: pointer;
+}
+
+/* --- UTILITIES --- */
+.container {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 24px;
+}
+
+.page-wrapper {
+    padding-top: 2rem;
+    padding-bottom: 4rem;
+}
+
+.section-header {
+    margin-bottom: 2rem;
+    border-bottom: 1px solid var(--border-subtle);
+    padding-bottom: 1rem;
+}
+
+.badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.25rem 0.75rem;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+/* --- ANIMATIONS --- */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.fade-in {
+    animation: fadeIn 0.5s ease-out forwards;
+}
+
+/* --- BUTTONS (Global Reset) --- */
+.btn-primary {
+    background-color: var(--primary);
+    color: white;
+    font-weight: 600;
+    padding: 0.75rem 1.5rem;
+    border-radius: var(--radius-md);
+    border: none;
+    transition: all 0.2s ease;
+    box-shadow: var(--shadow-sm);
+}
+
+.btn-primary:hover {
+    background-color: var(--primary-hover);
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-md);
+}
+
+.btn-secondary {
+    background-color: white;
+    color: var(--secondary);
+    font-weight: 600;
+    padding: 0.75rem 1.5rem;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border-subtle);
+    transition: all 0.2s ease;
+}
+
+.btn-secondary:hover {
+    background-color: #f8fafc;
+    color: var(--text-main);
+    border-color: #cbd5e1;
+}
+
+/* Skeleton Loader Re-integration */
+@keyframes shimmer {
+    0% {
+        background-position: -200% 0;
+    }
+
+    100% {
+        background-position: 200% 0;
+    }
+}
+
+.skeleton-wrapper {
+    background: var(--bg-card);
+    border-radius: var(--radius-lg);
+    padding: 1.5rem;
+    border: 1px solid var(--border-subtle);
+    height: 100%;
+}
+
+.skeleton-text {
+    background: #f1f5f9;
+    background-image: linear-gradient(90deg, #f1f5f9 0px, #e2e8f0 50px, #f1f5f9 100px);
+    background-size: 200% 100%;
+    border-radius: 4px;
+    margin-bottom: 0.75rem;
+    animation: shimmer 1.5s infinite linear;
+}
+
+.skeleton-title {
+    height: 28px;
+    width: 70%;
+    margin-bottom: 1.25rem;
+}
+
+.skeleton-subtitle {
+    height: 20px;
+    width: 40%;
+    margin-bottom: 1.25rem;
+}
+
+.skeleton-desc {
+    height: 16px;
+    width: 100%;
+    margin-bottom: 0.5rem;
+}
+
+.skeleton-tags {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 1.5rem;
+}
+
+.skeleton-tag {
+    width: 60px;
+    height: 28px;
+    border-radius: 999px;
+    background: #f1f5f9;
 }

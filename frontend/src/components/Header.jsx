@@ -39,13 +39,13 @@ const Header = () => {
                         Opportunities
                     </NavLink>
                     <NavLink
-                    to="/internships"
-                    className={({ isActive }) => isActive ? "nav-link active" : "nav-link"}
+                        to="/internships"
+                        className={({ isActive }) => isActive ? "nav-link active" : "nav-link"}
                     >
-                    Internships
+                        Internships
                     </NavLink>
 
-                     
+
                     <NavLink
                         to="/hackathons"
                         className={({ isActive }) => isActive ? "nav-link active" : "nav-link"}
@@ -53,20 +53,7 @@ const Header = () => {
                         Hackathons
                     </NavLink>
 
-                    {user && (
-    <>
-                    <NavLink to="/" className={({ isActive }) => isActive ? "nav-link active" : "nav-link"}>
-                        Recommended Internships
-                    </NavLink>
 
-                    <NavLink
-                        to="/matching-hackathons"
-                        className={({ isActive }) => isActive ? "nav-link active" : "nav-link"}
-                    >
-                        Recommended Hackathons
-                    </NavLink>
-                    </>
-                )}
                 </nav>
 
                 <div className="profile-section">

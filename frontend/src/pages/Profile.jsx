@@ -2,10 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { auth, db, storage } from '../firebase';
 import { onAuthStateChanged } from 'firebase/auth';
 import { getAuth } from "firebase/auth";
-import { doc, getDoc, setDoc, updateDoc, arrayUnion } from 'firebase/firestore';
+import { doc, getDoc, setDoc, updateDoc, arrayUnion, arrayRemove } from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { useNavigate } from 'react-router-dom';
-import {BASE_URL} from '../api';
+import { BASE_URL } from '../api';
 import './Profile.css';
 
 
@@ -71,30 +71,69 @@ const Profile = () => {
     }, []);
 
     const handleResumeUpload = async (e) => {
+        setUploading(true);
         const file = e.target.files[0];
-        if (!file) return;
-      
-        const auth = getAuth();
-        const token = await auth.currentUser.getIdToken();
-      
-        const formData = new FormData();
-        formData.append("resume", file);
-      
-        const res = await fetch("http://localhost:3000/upload-resume", {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-          body: formData,
-        });
-      
-        const data = await res.json();
-        console.log(data);
-      };
-      
-      
-      
-      
+        if (!file) { setUploading(false); return; }
+
+        try {
+            const auth = getAuth();
+            const token = await auth.currentUser.getIdToken();
+
+            const formData = new FormData();
+            formData.append("resume", file);
+
+            const res = await fetch(`${BASE_URL}/upload-resume`, {
+                method: "POST",
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+                body: formData,
+            });
+
+            const data = await res.json();
+            console.log("Upload response:", data);
+
+            if (data.success) {
+                // Update local state with extracted skills and flag
+                if (data.extractedSkills && data.extractedSkills.length > 0) {
+                    setUserData(prev => ({
+                        ...prev,
+                        resumeText: "resume extracted", // optimistic update to hide banner
+                        // Merge skills unique
+                        skills: Array.from(new Set([...(prev.skills || []), ...data.extractedSkills]))
+                    }));
+                    alert(`Resume uploaded! Found ${data.extractedSkills.length} skills.`);
+                } else {
+                    setUserData(prev => ({ ...prev, resumeText: "resume extracted" }));
+                    alert("Resume uploaded!");
+                }
+            } else {
+                alert("Upload failed: " + (data.error || "Unknown error"));
+            }
+        } catch (err) {
+            console.error(err);
+            alert("Error uploading resume.");
+        } finally {
+            setUploading(false);
+        }
+    };
+
+    const handleRemoveSkill = async (skillToRemove) => {
+        try {
+            const userRef = doc(db, "users", user.uid);
+            // Updating backend
+            await updateDoc(userRef, {
+                skills: arrayRemove(skillToRemove)
+            });
+            // Updating local UI
+            setUserData(prev => ({
+                ...prev,
+                skills: prev.skills.filter(s => s !== skillToRemove)
+            }));
+        } catch (error) {
+            console.error("Error removing skill:", error);
+        }
+    };
 
     const handleAddSkills = async () => {
         if (!skillInput.trim()) return;
@@ -191,7 +230,16 @@ const Profile = () => {
                         <div className="skills-container">
                             {userData.skills && userData.skills.length > 0 ? (
                                 userData.skills.map((skill, index) => (
-                                    <span key={index} className="skill-tag">{skill}</span>
+                                    <span key={index} className="skill-tag">
+                                        {skill}
+                                        <button
+                                            className="remove-skill-btn"
+                                            onClick={() => handleRemoveSkill(skill)}
+                                            style={{ marginLeft: '6px', background: 'none', border: 'none', color: '#6b7280', cursor: 'pointer', fontWeight: 'bold' }}
+                                        >
+                                            ×
+                                        </button>
+                                    </span>
                                 ))
                             ) : (
                                 <p style={{ color: '#9ca3af', fontStyle: 'italic' }}>No skills added yet.</p>

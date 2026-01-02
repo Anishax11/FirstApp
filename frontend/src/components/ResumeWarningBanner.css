@@ -1,0 +1,80 @@
+.resume-warning-banner {
+    background-color: #f0fdf4;
+    /* Very light green/blue or use standard warning/info color. User said 'soft warning'. Maybe light yellow or blue? Let's go with a soft blue/indigo mix for 'info' feel or light orange for warning. User said 'warning banner'. Light yellow/orange is safer for warning. */
+    background-color: #fff7ed;
+    /* Light orange */
+    border: 1px solid #fed7aa;
+    border-radius: 12px;
+    padding: 1rem 1.5rem;
+    margin: 1rem 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: #9a3412;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+    animation: slideDown 0.4s ease-out;
+}
+
+.banner-content {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.info-icon {
+    font-size: 1.5rem;
+}
+
+.banner-content p {
+    margin: 0;
+    font-weight: 500;
+}
+
+.banner-actions {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.upload-btn {
+    background-color: #ea580c;
+    color: white;
+    padding: 0.5rem 1.25rem;
+    border-radius: 8px;
+    border: none;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.upload-btn:hover {
+    background-color: #c2410c;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 6px -1px rgba(234, 88, 12, 0.2);
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Response for smaller screens */
+@media (max-width: 640px) {
+    .resume-warning-banner {
+        flex-direction: column;
+        text-align: center;
+        gap: 1rem;
+    }
+
+    .banner-content {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+}
