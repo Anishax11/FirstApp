@@ -1,3 +1,7 @@
+Backend Repository (Vercel Deployed):
+👉 https://github.com/Anishax11/skill-opportunity-backend.git
+
+
 # 🚀 SkillLens — 
 ### AI-Powered Skill-Based Opportunity Matching Platform
 SkillLens is an intelligent web platform that helps students and early-career professionals discover **internships, hackathons, and opportunities that truly match their skills**.  
