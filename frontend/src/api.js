@@ -13,6 +13,7 @@ export const fetchInternships = async () => {
     return data;
 };
 
+
 export const fetchHackathons = async () => {
   console.log('Fetching hackathons from backend...');
   const response = await fetch(`${BASE_URL}/hackathons`);

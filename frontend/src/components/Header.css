@@ -1,141 +1,150 @@
+/* Header.css */
+/* Header.css */
 .header {
-    background: rgba(255, 255, 255, 0.9);
-    backdrop-filter: blur(10px);
-    padding: 1rem 2rem;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    background: rgba(15, 23, 42, 0.85);
+    /* Dark Slate with opacity */
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    height: 70px;
+    width: 100%;
     position: sticky;
     top: 0;
-    z-index: 50;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+    z-index: 100;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    /* Subtle light border */
+    display: flex;
+    align-items: center;
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
 }
 
 .header-content {
+    width: 100%;
     max-width: 1200px;
     margin: 0 auto;
+    padding: 0 24px;
     display: flex;
     justify-content: space-between;
     align-items: center;
 }
 
+/* Logo */
 .logo-link {
     text-decoration: none;
+    display: flex;
+    align-items: center;
 }
 
 .logo {
-    font-size: 1.8rem;
+    font-size: 1.5rem;
     font-weight: 800;
-    background: linear-gradient(135deg, #2563eb, #7c3aed);
-    -webkit-background-clip: text;
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
+    letter-spacing: -0.05em;
+    color: #ffffff;
+    /* White text for dark navbar */
     margin: 0;
 }
 
+.logo span {
+    color: #06b6d4;
+    /* Cyan for tech accent */
+}
+
+/* Navigation - Centered */
 .nav-menu {
     display: flex;
-    gap: 2rem;
+    gap: 2.5rem;
     align-items: center;
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
 }
 
 .nav-link {
     text-decoration: none;
-    color: #4b5563;
+    color: #94a3b8;
+    /* Light Slate */
     font-weight: 500;
-    font-size: 1rem;
-    transition: color 0.2s ease;
+    font-size: 0.95rem;
+    transition: all 0.2s ease;
     padding: 0.5rem 0;
     position: relative;
 }
 
-.nav-link:hover,
+.nav-link:hover {
+    color: #f8fafc;
+    /* Almost White */
+    text-shadow: 0 0 8px rgba(255, 255, 255, 0.3);
+}
+
 .nav-link.active {
-    color: #2563eb;
+    color: #ffffff;
+    font-weight: 600;
 }
 
-.nav-link.active::after {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    height: 2px;
-    background: #2563eb;
-    border-radius: 2px;
-}
 
-.profile-section {
-    display: flex;
-    align-items: center;
-}
-
-/* Auth Buttons */
+/* Authentication */
 .auth-buttons {
     display: flex;
     gap: 1rem;
-}
-
-.auth-btn {
-    text-decoration: none;
-    font-weight: 500;
-    padding: 0.5rem 1rem;
-    border-radius: 6px;
-    transition: all 0.2s;
+    align-items: center;
 }
 
 .login-btn {
-    color: #4b5563;
+    text-decoration: none;
+    color: var(--text-muted);
+    font-weight: 600;
+    font-size: 0.95rem;
+    transition: color 0.2s;
 }
 
 .login-btn:hover {
-    color: #2563eb;
-    background: #f3f4f6;
+    color: var(--primary);
 }
 
 .signup-btn {
-    background: #2563eb;
+    text-decoration: none;
+    background-color: var(--primary);
     color: white;
+    padding: 0.5rem 1.25rem;
+    border-radius: 99px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    transition: background-color 0.2s, transform 0.1s;
+    box-shadow: var(--shadow-sm);
 }
 
 .signup-btn:hover {
-    background: #1d4ed8;
+    background-color: var(--primary-hover);
+    transform: translateY(-1px);
 }
 
-/* User Controls */
+/* User Profile */
+/* User Controls Container */
 .user-controls {
     display: flex;
     align-items: center;
-    gap: 1.5rem;
+    gap: 1.25rem;
+    height: 100%;
 }
 
 .profile-icon {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    overflow: hidden;
+    background: #1e293b;
+    border: 2px solid #334155;
+    box-shadow: 0 0 0 1px var(--border-subtle);
+    transition: transform 0.2s;
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    background: #f3f4f6;
-    color: #4b5563;
-    transition: all 0.2s ease;
-    border: 2px solid transparent;
-    text-decoration: none;
-    overflow: hidden;
+    flex-shrink: 0;
 }
 
 .profile-icon:hover {
-    border-color: #2563eb;
-    box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.1);
-}
-
-.default-avatar {
-    width: 100%;
-    height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: 600;
-    color: #4b5563;
-    background: #e5e7eb;
+    transform: scale(1.05);
+    border-color: var(--primary);
+    box-shadow: 0 0 0 2px var(--primary);
 }
 
 .header-profile-img {
@@ -144,40 +153,63 @@
     object-fit: cover;
 }
 
+.default-avatar {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--primary);
+    color: white;
+    font-weight: 700;
+    font-size: 1rem;
+}
+
 .logout-btn {
-    background: none;
-    border: 1px solid #e5e7eb;
-    color: #4b5563;
-    padding: 0.4rem 0.8rem;
-    border-radius: 4px;
+    background: transparent;
+    border: 1px solid #475569;
+    color: #cbd5e1;
+    font-size: 0.85rem;
+    font-weight: 600;
     cursor: pointer;
-    font-size: 0.9rem;
-    transition: all 0.2s;
+    padding: 0.5rem 1rem;
+    border-radius: 99px;
+    display: flex;
+    align-items: center;
+    transition: all 0.2s ease;
+    height: 36px;
 }
 
 .logout-btn:hover {
-    background: #fef2f2;
-    color: #ef4444;
-    border-color: #fca5a5;
+    color: #f8fafc;
+    background-color: rgba(255, 255, 255, 0.1);
+    border-color: #94a3b8;
 }
 
-
+/* Responsive */
 @media (max-width: 768px) {
-    .header-content {
-        flex-wrap: wrap;
-        gap: 1rem;
-    }
-
     .nav-menu {
+        position: static;
+        transform: none;
         order: 3;
         width: 100%;
         justify-content: center;
-        gap: 1.5rem;
+        overflow-x: auto;
         padding-top: 1rem;
-        border-top: 1px solid #f3f4f6;
+        gap: 1.5rem;
+        border-top: 1px solid var(--border-subtle);
     }
 
-    .profile-section {
-        margin-left: auto;
+    .header-content {
+        flex-wrap: wrap;
+        padding: 12px 16px;
+    }
+
+    .header {
+        height: auto;
+    }
+
+    .logo {
+        font-size: 1.25rem;
     }
 }

@@ -80,7 +80,7 @@ const Profile = () => {
         const formData = new FormData();
         formData.append("resume", file);
       
-        const res = await fetch("http://localhost:3000/upload-resume", {
+        const res = await fetch(`${BASE_URL}/upload-resume`, {
           method: "POST",
           headers: {
             Authorization: `Bearer ${token}`,
