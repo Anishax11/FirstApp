@@ -2,7 +2,11 @@ import { useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { getAuth } from 'firebase/auth';
 import Modal from './Modal';
-import { BASE_URL } from '../api'; // backend URL
+import SkillAnalysisModalContent from './SkillAnalysisModalContent';
+import { BASE_URL } from '../api';
+// import './InternshipCard.css'; // If this relies on OpportunityCard.css, we should perhaps import that or ensure styles are global? 
+// Assuming OpportunityCard.css is global or we want to switch to it? The user wants consistency.
+// Let's stick to existing styles but update the Modal usage.
 
 const InternshipCard = ({ internship, isRecommended, userId }) => {
   const [analysis, setAnalysis] = useState('');
@@ -22,58 +26,48 @@ const InternshipCard = ({ internship, isRecommended, userId }) => {
 
   const handleAnalyze = async () => {
     setLoading(true);
-    setError(null); // Clear previous errors
+    setError(null);
 
-    // 1. Use existing recommendation data if available
-    if (internship.matchPercentage !== undefined) {
-      setAnalysis({
-        matchPercentage: internship.matchPercentage,
-        matchedKeywords: internship.matchedSkills,
-        missingKeywords: internship.missingSkills
+    // 1. Check Auth
+    const auth = getAuth();
+    const user = auth.currentUser;
+    if (!user) {
+      alert("Please log in to use AI Analysis.");
+      setLoading(false);
+      return;
+    }
+
+    try {
+      const token = await user.getIdToken();
+      const response = await fetch(`${BASE_URL}/analysis`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          internshipId: internship.id,
+          type: 'internship'
+        })
       });
-      setLoading(false);
+
+      const data = await response.json();
+
+      if (data.success && data.analysis) {
+        setAnalysis(data.analysis);
+        setModalOpen(true);
+      } else {
+        setAnalysis({ error: data.error || "Failed to analyze." });
+        setModalOpen(true);
+      }
+
+    } catch (err) {
+      console.error("Analysis Error:", err);
+      setAnalysis({ error: "Network error during analysis." });
       setModalOpen(true);
-      return;
-    }
-
-    // 2. Client-side Calc
-    if (userData && userData.skills && skills.length > 0) { // Ensure internship has skills to compare
-      const userSkills = new Set(userData.skills.map(s => s.trim().toLowerCase()));
-      const itemSkills = skills.map(s => s.trim().toLowerCase());
-
-      const matched = itemSkills.filter(s => userSkills.has(s));
-      const missing = itemSkills.filter(s => !userSkills.has(s));
-
-      const percentage = itemSkills.length > 0
-        ? Math.round((matched.length / itemSkills.length) * 100)
-        : 0;
-
-      setAnalysis({
-        matchPercentage: percentage,
-        matchedKeywords: matched,
-        missingKeywords: missing
-      });
+    } finally {
       setLoading(false);
-      setModalOpen(true);
-      return;
     }
-
-    // 3. Fallback if user data or internship skills are missing for client-side calc
-    if (!userData || !userData.skills) {
-      setError("Please ensure your profile has skills to analyze.");
-      setLoading(false);
-      return;
-    }
-    if (skills.length === 0) {
-      setError("This internship has no listed skills for analysis.");
-      setLoading(false);
-      return;
-    }
-
-    // If we reach here, it means there was an unexpected case, or no skills to compare.
-    setAnalysis("Unable to perform skill analysis.");
-    setLoading(false);
-    setModalOpen(true);
   };
 
   return (
@@ -90,68 +84,29 @@ const InternshipCard = ({ internship, isRecommended, userId }) => {
       )}
       {isRecommended && <p className="match-reason">✨ Matches your skills profile</p>}
       <a href={applyLink} target="_blank" rel="noopener noreferrer">
-        <button>Apply Now</button>
+        <button style={{ marginRight: '0.5rem' }}>Apply Now</button>
       </a>
       <button onClick={handleAnalyze} disabled={loading}>
         {loading ? 'Analyzing...' : 'Analyze'}
       </button>
       {error && <p className="error">{error}</p>}
-      <Modal isOpen={modalOpen} onClose={() => setModalOpen(false)} title="Skill Match Analysis">
-        <div style={{ textAlign: 'left' }}>
-          {analysis && typeof analysis === 'object' ? (
-            <>
-              <div style={{ marginBottom: '1.5rem' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
-                  <span style={{ fontWeight: 'bold', color: '#374151' }}>Match Score</span>
-                  <span style={{ fontWeight: 'bold', color: analysis.matchPercentage > 70 ? '#16a34a' : '#ea580c' }}>{analysis.matchPercentage}%</span>
-                </div>
-                <div style={{ height: '8px', background: '#e5e7eb', borderRadius: '4px', overflow: 'hidden' }}>
-                  <div style={{
-                    width: `${analysis.matchPercentage}%`,
-                    height: '100%',
-                    background: analysis.matchPercentage > 70 ? '#16a34a' : (analysis.matchPercentage > 40 ? '#f59e0b' : '#ef4444'),
-                    transition: 'width 0.5s ease'
-                  }}></div>
-                </div>
-              </div>
 
-              <div style={{ marginBottom: '1.5rem' }}>
-                <h4 style={{ fontSize: '0.9rem', color: '#6b7280', marginBottom: '0.5rem', textTransform: 'uppercase' }}>Matched Skills</h4>
-                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
-                  {analysis.matchedKeywords?.length > 0 ? analysis.matchedKeywords.map((s, i) => (
-                    <span key={i} style={{ background: '#dcfce7', color: '#166534', padding: '0.25rem 0.75rem', borderRadius: '999px', fontSize: '0.85rem', fontWeight: '500' }}>✓ {s}</span>
-                  )) : <span style={{ color: '#9ca3af', fontStyle: 'italic' }}>No direct matches found.</span>}
-                </div>
-              </div>
+      <Modal
+        isOpen={modalOpen}
+        onClose={() => setModalOpen(false)}
+        title="Skill Match Analysis"
+        className="dark-modal"
+      >
+        <SkillAnalysisModalContent analysis={analysis} />
 
-              <div style={{ marginBottom: '1.5rem' }}>
-                <h4 style={{ fontSize: '0.9rem', color: '#6b7280', marginBottom: '0.5rem', textTransform: 'uppercase' }}>Missing / To Learn</h4>
-                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
-                  {analysis.missingKeywords?.length > 0 ? analysis.missingKeywords.map((s, i) => (
-                    <span key={i} style={{ background: '#ffedd5', color: '#9a3412', padding: '0.25rem 0.75rem', borderRadius: '999px', fontSize: '0.85rem', fontWeight: '500' }}>! {s}</span>
-                  )) : <span style={{ color: '#9ca3af', fontStyle: 'italic' }}>You have all required skills!</span>}
-                </div>
-              </div>
-              {analysis.aiAnalysisText && (
-                <div style={{ marginBottom: '1.5rem' }}>
-                  <h4 style={{ fontSize: '0.9rem', color: '#6b7280', marginBottom: '0.5rem', textTransform: 'uppercase' }}>AI Analysis</h4>
-                  <p style={{ whiteSpace: 'pre-line', lineHeight: '1.6', color: '#374151', fontSize: '0.9rem' }}>{analysis.aiAnalysisText}</p>
-                </div>
-              )}
-            </>
-          ) : (
-            <p style={{ whiteSpace: 'pre-line', lineHeight: '1.6', color: '#374151' }}>{analysis}</p>
-          )}
-        </div>
-
-        <div style={{ marginTop: '2rem', display: 'flex', justifyContent: 'flex-end' }}>
+        <div style={{ marginTop: '0.5rem', textAlign: 'right', padding: '0 0.5rem 1rem' }}>
           <button
             onClick={() => setModalOpen(false)}
             style={{
               padding: "0.5rem 1.5rem",
-              background: "#e5e7eb",
-              color: "#374151",
-              border: "none",
+              background: "rgba(255,255,255,0.1)",
+              color: "white",
+              border: "1px solid rgba(255,255,255,0.2)",
               borderRadius: "8px",
               cursor: "pointer",
               fontWeight: "600"
@@ -164,6 +119,8 @@ const InternshipCard = ({ internship, isRecommended, userId }) => {
 
     </div>
   );
+
+
 };
 
 export default InternshipCard;
