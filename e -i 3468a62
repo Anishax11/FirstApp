@@ -1,0 +1,9 @@
+[33me9fcbf6[m[33m ([m[1;36mHEAD -> [m[1;32mclean-push[m[33m)[m Refine basic functionalities
+[33m49c2a96[m[33m ([m[1;32mmaster[m[33m)[m Stop tracking backend secrets
+[33m2f0d8d5[m Stop tracking node_modules
+[33m0909ad3[m Add hackathon analysis feature and improve analysis panel readability
+[33m60e6982[m Extract and store resume text on PDF upload
+[33m3468a62[m Add hackathons, recommendation page, and working analysis feature
+[33med12bc7[m Make internships public and add authenticated matching recommendations
+[33md1f8a53[m Add backend server code
+[33m1e45946[m Add frontend folder

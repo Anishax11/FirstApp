@@ -1,20 +1,14 @@
 .modal-overlay {
-<<<<<<< HEAD
-  position: fixed;
-  inset: 0; /* top:0 right:0 bottom:0 left:0 */
-=======
+
   position: fixed; /* Stay on screen */
   inset: 0; /* top:0; right:0; bottom:0; left:0 */
->>>>>>> 88d5db8 (Refine basic functionalities)
   background: rgba(0, 0, 0, 0.45);
   backdrop-filter: blur(4px);
 
   display: flex; /* Center content */
   justify-content: center;
-<<<<<<< HEAD
-=======
+
   align-items: center;
->>>>>>> 88d5db8 (Refine basic functionalities)
 
   z-index: 9999;
 }
