@@ -9,11 +9,11 @@
 // logger.log('hehe');
 
 require('dotenv').config(); // load .env
-const fetch = require('node-fetch');const http = require('http');
+const fetch = require('node-fetch'); const http = require('http');
 const pdfParse = require("pdf-parse");
 
 const admin = require('firebase-admin');
-const serviceAccount = require('./serviceAccountKey.json'); 
+const serviceAccount = require('./serviceAccountKey.json');
 const multer = require("multer");
 
 const upload = multer({
@@ -52,12 +52,12 @@ const server = http.createServer(async (req, res) => {
     try {
       const decoded = await verifyUser(req);
       const uid = decoded.uid;
-  
+
       const busboy = Busboy({ headers: req.headers });
-  
+
       const userData = {};
       let resumePath = "";
-  
+
       busboy.on("field", (fieldname, value) => {
         if (fieldname === "skills") {
           userData.skills = JSON.parse(value);
@@ -65,24 +65,24 @@ const server = http.createServer(async (req, res) => {
           userData[fieldname] = value;
         }
       });
-  
+
       busboy.on("file", (fieldname, file, filename) => {
         if (fieldname === "resume") {
           resumePath = `uploads/${uid}_${filename}`;
           file.pipe(fs.createWriteStream(resumePath));
         }
       });
-  
+
       busboy.on("finish", async () => {
         await saveUserProfile(uid, {
           ...userData,
           resumePath
         });
-  
+
         res.writeHead(200, { "Content-Type": "application/json" });
         res.end(JSON.stringify({ success: true }));
       });
-  
+
       req.pipe(busboy);
     } catch (err) {
       res.writeHead(401);
@@ -93,9 +93,9 @@ const server = http.createServer(async (req, res) => {
   else if (req.url === "/matching_internships" && req.method === "GET") {
     try {
       const decoded = await verifyUser(req);
-      console.log("Called getMatchingInternships, uid is : ",decoded.uid);
-      const internships = await getMatchingInternships(decoded.uid);
-  
+      console.log("Called getRecommendations for internships, uid is : ", decoded.uid);
+      const internships = await getRecommendations(decoded.uid, 'internship');
+
       res.writeHead(200, { "Content-Type": "application/json" });
       res.end(JSON.stringify(internships));
     } catch (err) {
@@ -106,9 +106,9 @@ const server = http.createServer(async (req, res) => {
   else if (req.url === "/matching_hackathons") {
     try {
       const decoded = await verifyUser(req);
-      console.log("Called getMatchingHackathons, uid is : ",decoded.uid);
-      const hackathons = await getMatchingHackathons(decoded.uid);
-  
+      console.log("Called getRecommendations for hackathons, uid is : ", decoded.uid);
+      const hackathons = await getRecommendations(decoded.uid, 'hackathon');
+
       res.writeHead(200, { "Content-Type": "application/json" });
       res.end(JSON.stringify(hackathons));
     } catch (err) {
@@ -120,7 +120,7 @@ const server = http.createServer(async (req, res) => {
   else if (req.url === "/internships") {
     console.log("internships");
     const internships = await getInternships();
-  
+
     res.writeHead(200, { "Content-Type": "application/json" });
     res.end(JSON.stringify(internships));
   }
@@ -128,53 +128,63 @@ const server = http.createServer(async (req, res) => {
   else if (req.url === "/hackathons") {
     console.log("hackathons");
     const hackathons = await getHackathons();
-  
+
     res.writeHead(200, { "Content-Type": "application/json" });
     res.end(JSON.stringify(hackathons));
 
   }
   else if (req.url === "/all") {
     const all = await getAllOpportunities();
-  
+
     res.writeHead(200, { "Content-Type": "application/json" });
     res.end(JSON.stringify(all));
-    
+
   }
   else if (req.url === "/upload-resume" && req.method === "POST") {
     try {
       console.log("1️⃣ Upload route hit");
-  
+
       const decoded = await verifyUser(req);
       const uid = decoded.uid;
       console.log("2️⃣ User verified:", uid);
-  
+
       upload.single("resume")(req, res, async (err) => {
         try {
           const pdfBuffer = req.file.buffer;
           console.log("6️⃣ Buffer length:", pdfBuffer.length);
-      
+
           // Dynamically import pdf-parse
           // const pdfModule = await import("pdf-parse");
           // const pdfParse = pdfModule.default; // ✅ This will be the function
-      
+
           const parsed = await pdfParse(pdfBuffer);
           console.log("7️⃣ PDF parsed, text length:", parsed.text.length);
-          console.log("7️⃣ PDF parsed text :", parsed.text);
+
+          // EXTRACT SKILLS
+          const extractedSkills = extractSkills(parsed.text);
+          console.log("✅ Extracted Skills:", extractedSkills);
+
           // Save to Firestore
-          await db.collection("users").doc(uid).set(
-            { resumeText: parsed.text, resumeUpdatedAt: Date.now() },
-            { merge: true }
-          );
-      
+          const updateData = {
+            resumeText: parsed.text,
+            resumeUpdatedAt: Date.now()
+          };
+
+          if (extractedSkills.length > 0) {
+            updateData.skills = admin.firestore.FieldValue.arrayUnion(...extractedSkills);
+          }
+
+          await db.collection("users").doc(uid).set(updateData, { merge: true });
+
           res.writeHead(200, { "Content-Type": "application/json" });
-          res.end(JSON.stringify({ success: true }));
+          res.end(JSON.stringify({ success: true, extractedSkills: extractedSkills }));
         } catch (e) {
           console.error("❌ PDF parse / Firestore error:", e);
           res.writeHead(500);
           res.end(JSON.stringify({ error: e.message }));
         }
       });
-      
+
     } catch (err) {
       console.error("❌ Outer error:", err);
       res.writeHead(401);
@@ -185,35 +195,35 @@ const server = http.createServer(async (req, res) => {
     try {
       const decoded = await verifyUser(req);
       const uid = decoded.uid;
-  
+
       let body = "";
       req.on("data", chunk => (body += chunk));
-  
+
       req.on("end", async () => {
         try {
           const { internshipId, hackathonId, type } = JSON.parse(body);
-  
+
           // Basic validation
           if (!type) {
             res.writeHead(400);
             return res.end(JSON.stringify({ error: "Missing type" }));
           }
-  
+
           const itemId = internshipId || hackathonId;
-  
+
           if (!itemId) {
             res.writeHead(400);
             return res.end(
               JSON.stringify({ error: "Missing internshipId or hackathonId" })
             );
           }
-  
+
           const analysis = await getAnalysis({
             userId: uid,
             itemId,
             type
           });
-  
+
           res.writeHead(200, { "Content-Type": "application/json" });
           res.end(
             JSON.stringify({
@@ -232,7 +242,7 @@ const server = http.createServer(async (req, res) => {
       res.end(JSON.stringify({ error: err.message }));
     }
   }
-  
+
 
 });
 
@@ -299,110 +309,41 @@ async function getAnalysis({ userId, itemId, type }) {
               role: "user",
               parts: [
                 {
-                  text: `You are a career coach AI.
-
-${promptContext}:
+                  text: `You are an expert technical recruiter.
+Opportunity type: ${type}
 Description:
 ${description}
 
 Required skills:
 ${Array.isArray(skillsRequired) ? skillsRequired.join(", ") : skillsRequired}
 
-User profile:
-Resume:
-${resumeText}
+User summary:
+${resumeText.slice(0, 4000)}
 
 User skills:
 ${Array.isArray(userSkills) ? userSkills.join(", ") : userSkills}
 
-You are an expert technical recruiter and career advisor.
 
-Required skills:
-${Array.isArray(skillsRequired) ? skillsRequired.join(", ") : skillsRequired}
+TASK:
+Analyze suitability of this opportunity for the user.
 
+Respond in plain text only.
 
-User profile:
-Resume:
-${resumeText}
+FORMAT (follow exactly):
 
-User skills:
-${Array.isArray(userSkills) ? userSkills.join(", ") : userSkills}
+Overall Match: XX%
 
-Task:
-Analyze how suitable this opportunity is for the user.
+Application Verdict:
+(Choose one: Strongly recommended / Recommended with preparation / Upskill required / Not recommended)
 
-Skill interpretation rules:
-- Treat skill names semantically, not literally.
-- Consider common variants equivalent (e.g., Node.js, NodeJS, node js).
-- If a skill appears in the user's skill list, assume the user has it.
-- Do NOT mark a skill as missing if it is a semantic match.
-- Use reasonable inference from resume content (projects, coursework, experience).
-- Do NOT invent skills or projects that are not mentioned.
+Matched Skills:
+✓ skill – short reason
 
-Response format rules:
-- Respond in plain text only.
-- Use clear section headings in **bold**.
-- Use ✓ for matched qualifications.
-- Use ? for missing or unclear qualifications.
-- Use • for bullet points.
-- Keep the tone realistic, professional, and encouraging (similar to LinkedIn job insights).
-- Do NOT use emojis.
+Missing Skills:
+? skill – short reason
 
-Output structure (follow exactly):
-
---------------------------------------------------
-
-Overall Match: XX% 
-
-(Brief 1–2 line summary explaining the match percentage.)
-
-Application Verdict
-Choose ONE and state it clearly:
-- "Strongly recommended to apply"
-- "Recommended to apply with preparation"
-- "Apply only if willing to upskill"
-- "Not recommended at this stage"
-
-Then add a very short and to rhe point justification paragraph, written like a recruiter review.
-
----
-
-Required Qualifications Match
-Matches X of Y required qualifications:
-
-✓ Skill name — short explanation of how the user demonstrates this  
-? Skill name — clear reason why it is missing or unclear (e.g., “No mention of Unreal Engine”)
-
----
-
-Missing Skills & How to Learn Them
-For each missing or unclear skill:
-
-Skill Name
-• Why it matters for this role  
-• Suggested learning roadmap (beginner → intermediate → applied)  
-• Estimated time to reach basic competence  
-
-Recommended Resources
-• Official docs / trusted platforms (e.g., Unreal Engine Docs, Coursera, Udemy, freeCodeCamp, YouTube channels, GitHub repos)
-• Avoid obscure or unreliable sources
-
----
-
-These skills may be assessed during interviews or assignments:
-• Soft skills
-• Domain interest
-• Problem-solving ability
-• Communication / collaboration
-• Portfolio or project discussion
-
----
-
-Final Advice
-End with a concise, actionable paragraph answering:
-“What should the user do next if they want to pursue this opportunity?”
-
---------------------------------------------------`
+Next Steps:
+• 2–3 clear actions the user should take`
                 }
               ]
             }
@@ -412,6 +353,7 @@ End with a concise, actionable paragraph answering:
     );
 
     const data = await res.json();
+    console.log("Gemini API Response:", JSON.stringify(data, null, 2));
 
     const aiText =
       data?.candidates?.[0]?.content?.parts
@@ -429,116 +371,8 @@ End with a concise, actionable paragraph answering:
 
 
 
-async function saveUserProfile(uid, data) {
-
-    return admin.firestore()
-      .collection("users")
-      .doc(uid)
-      .set(data, { merge: true });
-  }
-
-
-  async function getMatchingInternships(uid) {
-    console.log("Inside matching internships func");
-  
-    // 1️⃣ Get user
-    const userDoc = await db.collection("users").doc(uid).get();
-    if (!userDoc.exists) return [];
-  
-    const userSkillsRaw = userDoc.data().skills || [];
-  
-    // 2️⃣ Normalize user skills
-    const userSkills = userSkillsRaw.map(skill =>
-      skill.trim().toLowerCase()
-    );
-  
-    if (userSkills.length === 0) return [];
-  
-    // 3️⃣ Fetch ALL internships
-    const internshipsSnap = await db.collection("internships").get();
-  
-    const results = [];
-  
-    internshipsSnap.forEach(doc => {
-      const internship = doc.data();
-  
-      const requiredSkillsRaw = internship.skillsRequired || [];
-  
-      // 4️⃣ Normalize internship skills
-      const requiredSkills = requiredSkillsRaw.map(skill =>
-        skill.trim().toLowerCase()
-      );
-  
-      // 5️⃣ Compare using NORMALIZED values ✅
-      const hasMatch = requiredSkills.some(skill =>
-        userSkills.includes(skill)
-      );
-  
-      if (hasMatch) {
-        results.push({
-          id: doc.id,
-          ...internship
-        });
-      }
-    });
-  
-    console.log("Matched internships:", results.length);
-    return results;
-  }
-  
-  async function getMatchingHackathons(uid) {
-    console.log("Inside matching hackathons func");
-  
-    // 1️⃣ Get user
-    const userDoc = await db.collection("users").doc(uid).get();
-    if (!userDoc.exists) return [];
-  
-    const userSkillsRaw = userDoc.data().skills || [];
-  
-    // 2️⃣ Normalize user skills
-    const userSkills = userSkillsRaw.map(skill =>
-      skill.trim().toLowerCase()
-    );
-  
-    if (userSkills.length === 0) return [];
-  
-    // 3️⃣ Fetch ALL hackathons
-    const hackathonsSnap = await db.collection("hackathons").get();
-  
-    const results = [];
-  
-    hackathonsSnap.forEach(doc => {
-      const hackathon = doc.data();
-  
-      const requiredSkillsRaw = hackathon.skillsRequired || [];
-  
-      // 4️⃣ Normalize skills
-      const requiredSkills = requiredSkillsRaw.map(skill =>
-        skill.trim().toLowerCase()
-      );
-  
-      // 5️⃣ Compare using NORMALIZED values ✅
-      const hasMatch = requiredSkills.some(skill =>
-        userSkills.includes(skill)
-      );
-  
-      if (hasMatch) {
-        results.push({
-          id: doc.id,
-          ...hackathon
-        });
-      }
-    });
-  
-    console.log("Matched hackathons:", results.length);
-    return results;
-  }
-  
-  
-
-
 async function getInternships() {
-  
+
 
   const internshipsRef = db.collection("internships");
   const snapshot = await internshipsRef.get(); //  fetch data
@@ -546,7 +380,7 @@ async function getInternships() {
   const results = [];
   snapshot.forEach(doc => {
     results.push({
-      id: doc.id,      
+      id: doc.id,
       ...doc.data()
     });
   });
@@ -555,7 +389,7 @@ async function getInternships() {
 
 
 async function getAllOpportunities() {
-  
+
 
   const hackathonsRef = db.collection("hackathons");
   const hackathonsnapshot = await hackathonsRef.get(); //  fetch data
@@ -563,18 +397,18 @@ async function getAllOpportunities() {
   const results = [];
   hackathonsnapshot.forEach(doc => {
     results.push({
-      id: doc.id,      
+      id: doc.id,
       ...doc.data()
     });
   });
-  
+
 
   const internshipsRef = db.collection("internships");
   const internshipsnapshot = await internshipsRef.get(); //  fetch data
 
   internshipsnapshot.forEach(doc => {
     results.push({
-      id: doc.id,      
+      id: doc.id,
       ...doc.data()
     });
   });
@@ -584,7 +418,7 @@ async function getAllOpportunities() {
 
 
 async function getHackathons() {
-  
+
 
   const hackathonsRef = db.collection("hackathons");
   const snapshot = await hackathonsRef.get(); //  fetch data
@@ -592,7 +426,7 @@ async function getHackathons() {
   const results = [];
   snapshot.forEach(doc => {
     results.push({
-      id: doc.id,      
+      id: doc.id,
       ...doc.data()
     });
   });
@@ -618,10 +452,33 @@ async function verifyUser(req) {
 
 // Start the server and test Gemini
 server.listen(3000, () => {
-
   console.log("Server running on http://localhost:3000");
-
   // testGemini();
-  
 });
+
+// Helper: Basic Keyword Extraction
+function extractSkills(text) {
+  if (!text) return [];
+  const normalizedText = text.toLowerCase();
+  // A basic list of tech skills to check for
+  const skillKeywords = [
+    "Javascript", "Python", "Java", "C++", "C#", "Go", "Rust", "Swift", "Kotlin", "TypeScript",
+    "React", "Angular", "Vue", "Next.js", "Node.js", "Express", "Django", "Flask", "Spring Boot",
+    "HTML", "CSS", "SQL", "NoSQL", "MongoDB", "PostgreSQL", "MySQL", "AWS", "Azure", "Google Cloud",
+    "Docker", "Kubernetes", "Git", "GitHub", "Jira", "Figma", "Machine Learning", "Data Science",
+    "TensorFlow", "PyTorch", "Pandas", "NumPy", "Scikit-learn", "NLP", "Agile", "Scrum", "DevOps", "CI/CD", "Linux"
+  ];
+
+  const foundSkills = [];
+  skillKeywords.forEach(skill => {
+    // Escape special chars for regex (like C++, Node.js)
+    const escaped = skill.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const regex = new RegExp(`\\b${escaped.toLowerCase()}\\b`, "i");
+
+    if (normalizedText.match(regex) || normalizedText.includes(skill.toLowerCase())) {
+      foundSkills.push(skill);
+    }
+  });
+  return [...new Set(foundSkills)];
+}
 
