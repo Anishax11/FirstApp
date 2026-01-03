@@ -4,6 +4,16 @@ import { getAuth } from 'firebase/auth';
 import Modal from './Modal';
 import './OpportunityCard.css';
 
+const calculateMatchPercentage = (userSkills = [], requiredSkills = []) => {
+    if (!userSkills.length || !requiredSkills.length) return 0;
+
+    const user = userSkills.map(s => s.toLowerCase());
+    const required = requiredSkills.map(s => s.toLowerCase());
+
+    const matched = required.filter(skill => user.includes(skill));
+    return Math.round((matched.length / required.length) * 100);
+};
+
 const OpportunityCard = ({ item, type, isRecommended }) => {
     // Normalizing data fields
     const title = item.title || item.Title || "Untitled Opportunity";
@@ -28,6 +38,9 @@ const OpportunityCard = ({ item, type, isRecommended }) => {
     const [loading, setLoading] = useState(false);
     const [modalOpen, setModalOpen] = useState(false);
     const [error, setError] = useState(null);
+
+    const matchPercentage = calculateMatchPercentage(userData?.skills, skills);
+    const isSkillRecommended = matchPercentage > 75;
 
     const handleAnalyze = async () => {
         setLoading(true);
@@ -78,7 +91,12 @@ const OpportunityCard = ({ item, type, isRecommended }) => {
     };
 
     return (
-        <div className={`opportunity-card ${isRecommended ? 'recommended' : ''}`}>
+        <div className={`opportunity-card ${isRecommended ? 'recommended' : ''} ${isSkillRecommended ? 'with-badge' : ''}`}>
+            {isSkillRecommended && (
+                <span className="recommended-badge">
+                    Recommended
+                </span>
+            )}
 
             <div className="card-header">
                 <h3 className="card-title">{title}</h3>
@@ -99,6 +117,8 @@ const OpportunityCard = ({ item, type, isRecommended }) => {
                     ⭐ Recommended for you
                 </div>
             )}
+
+
 
             <p className="card-description">{description}</p>
 
