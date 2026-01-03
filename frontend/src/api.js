@@ -27,7 +27,6 @@ export const fetchHackathons = async () => {
 };
 
 
-
 export const fetchMatchingHackathons = async () => {
   try {
     const auth = getAuth();

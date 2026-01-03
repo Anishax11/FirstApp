@@ -2,6 +2,7 @@ import { useState } from "react";
 import { signInWithEmailAndPassword, signInWithPopup } from "firebase/auth";
 import { auth, googleProvider } from "../firebase";
 import { useNavigate, Link } from "react-router-dom";
+import "./Auth.css"; // New Premium Dark Theme
 
 const Login = () => {
     const [email, setEmail] = useState("");
@@ -69,6 +70,12 @@ const Login = () => {
                 </div>
 
                 <button onClick={handleGoogleLogin} className="google-btn">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M23.52 12.29C23.52 11.43 23.44 10.61 23.3 9.82H12V14.45H18.46C18.18 15.92 17.33 17.16 16.06 18.01V20.98H19.93C22.19 18.9 23.52 15.83 23.52 12.29Z" fill="#4285F4" />
+                        <path d="M12 24C15.24 24 17.96 22.92 19.93 21.1L16.06 18.13C14.99 18.85 13.62 19.27 12 19.27C8.87 19.27 6.22 17.16 5.27 14.36H1.27V17.46C3.25 21.39 7.32 24 12 24Z" fill="#34A853" />
+                        <path d="M5.27 14.36C4.78 12.89 4.78 11.11 5.27 9.64V6.54H1.27C-0.42 9.89 -0.42 14.11 1.27 17.46L5.27 14.36Z" fill="#FBBC05" />
+                        <path d="M12 4.73C13.72 4.73 15.27 5.34 16.48 6.5L19.98 3C17.82 0.97 14.99 -0.13 12 0.04C7.32 0.04 3.25 2.65 1.27 6.58L5.27 9.68C6.22 6.88 8.87 4.73 12 4.73Z" fill="#EA4335" />
+                    </svg>
                     Login with Google
                 </button>
 
@@ -76,121 +83,6 @@ const Login = () => {
                     Don't have an account? <Link to="/signup">Sign up</Link>
                 </p>
             </div>
-
-            <style>{`
-                .auth-container {
-                    display: flex;
-                    justify-content: center;
-                    align-items: center;
-                    min-height: 80vh;
-                    padding: 1rem;
-                }
-                .auth-card {
-                    background: white;
-                    padding: 2.5rem;
-                    border-radius: 12px;
-                    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-                    width: 100%;
-                    max-width: 400px;
-                }
-                .auth-card h2 {
-                    text-align: center;
-                    margin-bottom: 0.5rem;
-                    color: #1f2937;
-                }
-                .auth-subtitle {
-                    text-align: center;
-                    color: #6b7280;
-                    margin-bottom: 2rem;
-                }
-                .auth-error {
-                    background: #fee2e2;
-                    color: #ef4444;
-                    padding: 0.75rem;
-                    border-radius: 6px;
-                    margin-bottom: 1rem;
-                    font-size: 0.875rem;
-                }
-                .form-group {
-                    margin-bottom: 1rem;
-                }
-                .form-group label {
-                    display: block;
-                    font-size: 0.875rem;
-                    font-weight: 500;
-                    color: #374151;
-                    margin-bottom: 0.5rem;
-                }
-                .form-input {
-                    width: 100%;
-                    padding: 0.75rem;
-                    border: 1px solid #d1d5db;
-                    border-radius: 6px;
-                    box-sizing: border-box;
-                }
-                .btn-primary {
-                    background: #2563eb;
-                    color: white;
-                    border: none;
-                    padding: 0.75rem;
-                    border-radius: 6px;
-                    font-weight: 600;
-                    cursor: pointer;
-                    width: 100%;
-                    font-size: 1rem;
-                }
-                .btn-primary:hover {
-                    background: #1d4ed8;
-                }
-                .divider {
-                    text-align: center;
-                    margin: 1.5rem 0;
-                    position: relative;
-                }
-                .divider::before {
-                    content: '';
-                    position: absolute;
-                    top: 50%;
-                    left: 0;
-                    width: 100%;
-                    height: 1px;
-                    background: #e5e7eb;
-                    z-index: 0;
-                }
-                .divider span {
-                    background: white;
-                    padding: 0 1rem;
-                    color: #6b7280;
-                    font-size: 0.875rem;
-                    position: relative;
-                    z-index: 1;
-                }
-                .google-btn {
-                    width: 100%;
-                    padding: 0.75rem;
-                    background: white;
-                    border: 1px solid #d1d5db;
-                    border-radius: 6px;
-                    color: #374151;
-                    font-weight: 500;
-                    cursor: pointer;
-                    transition: background 0.2s;
-                }
-                .google-btn:hover {
-                    background: #f9fafb;
-                }
-                .auth-footer {
-                    text-align: center;
-                    margin-top: 1.5rem;
-                    font-size: 0.875rem;
-                    color: #6b7280;
-                }
-                .auth-footer a {
-                    color: #2563eb;
-                    text-decoration: none;
-                    font-weight: 500;
-                }
-            `}</style>
         </div>
     );
 };
