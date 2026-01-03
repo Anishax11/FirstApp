@@ -1,12 +1,20 @@
 .modal-overlay {
+<<<<<<< HEAD
   position: fixed;
   inset: 0; /* top:0 right:0 bottom:0 left:0 */
+=======
+  position: fixed; /* Stay on screen */
+  inset: 0; /* top:0; right:0; bottom:0; left:0 */
+>>>>>>> 88d5db8 (Refine basic functionalities)
   background: rgba(0, 0, 0, 0.45);
   backdrop-filter: blur(4px);
 
-  display: flex;
-  align-items: center;
+  display: flex; /* Center content */
   justify-content: center;
+<<<<<<< HEAD
+=======
+  align-items: center;
+>>>>>>> 88d5db8 (Refine basic functionalities)
 
   z-index: 9999;
 }
@@ -17,34 +25,33 @@
   padding: 1.5rem;
   width: 90%;
   max-width: 600px;
+  max-height: 85vh; /* Fit on screen */
+  overflow-y: auto; /* Scroll if content too big */
 
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.25);
   animation: modal-pop 0.2s ease-out;
 }
 
-/* Smooth pop */
 @keyframes modal-pop {
   from {
-    transform: scale(0.95);
     opacity: 0;
+    transform: scale(0.95);
   }
   to {
-    transform: scale(1);
     opacity: 1;
+    transform: scale(1);
   }
 }
 
-.modal-body {
-  overflow-y: auto;        /*  REQUIRED */
-  margin-top: 1rem;
-  white-space: pre-wrap;   /*  preserves Gemini line breaks */
-  line-height: 1.5;
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
 }
 
 .close-btn {
-  position: absolute;
-  top: 0.5rem;
-  right: 0.75rem;
   border: none;
   background: none;
   font-size: 1.5rem;

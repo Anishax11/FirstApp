@@ -1,0 +1,15 @@
+{
+  "projects": {
+    "default": "skill-opportunity-translator"
+  },
+  "targets": {
+    "skill-opportunity-translator": {
+      "hosting": {
+        "default": [
+          "skill-opportunity-translator"
+        ]
+      }
+    }
+  },
+  "etags": {}
+}

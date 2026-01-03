@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { getAuth } from "firebase/auth";
 import Modal from "./Modal";
-import { BASE_URL } from "../api";
+import {BASE_URL} from "../api";
 import "./HackathonCard.css";
 
 const HackathonCard = ({ hackathon, isRecommended }) => {

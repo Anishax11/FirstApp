@@ -32,9 +32,8 @@ admin.initializeApp({
 // const path = require("path");
 const db = admin.firestore(); // now you can use Firestore
 
-const api_base = "https://orange-planets-try.loca.lt";
 
-const server = http.createServer(async(req, res) => {
+const server = http.createServer(async (req, res) => {
   console.log("Incoming request:", req.method, req.url);
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader("Access-Control-Allow-Methods", "GET,POST,OPTIONS");
@@ -90,6 +89,7 @@ const server = http.createServer(async(req, res) => {
       res.end(JSON.stringify({ error: err.message }));
     }
   }
+
   else if (req.url === "/matching_internships" && req.method === "GET") {
     try {
       const decoded = await verifyUser(req);

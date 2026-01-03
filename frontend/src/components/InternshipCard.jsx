@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { getAuth } from "firebase/auth";
 import Modal from "./Modal";
-import { BASE_URL } from "../api";
+import {BASE_URL} from "../api";
 import "./InternshipCard.css";
 
 const InternshipCard = ({ internship, isRecommended }) => {
@@ -29,7 +29,7 @@ const InternshipCard = ({ internship, isRecommended }) => {
       const auth = getAuth();
       const user = auth.currentUser;
       const token = user ? await user.getIdToken() : null;
-
+      console.log(token);
       if (!token) throw new Error("User not logged in");
 
       const response = await fetch(`${BASE_URL}/analysis`, {
