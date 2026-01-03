@@ -3,7 +3,11 @@ import { useAuth } from '../contexts/AuthContext';
 import { getAuth } from 'firebase/auth';
 import Modal from './Modal';
 
+
 import {BASE_URL} from "../api";
+
+import SkillAnalysisModalContent from './SkillAnalysisModalContent';
+
 import './OpportunityCard.css';
 
 
@@ -44,7 +48,7 @@ const OpportunityCard = ({ item, type, isRecommended }) => {
 
 
     const matchPercentage = calculateMatchPercentage(userData?.skills, skills);
-    const isSkillRecommended = matchPercentage >= 80;
+    const isSkillRecommended = matchPercentage >= 70;
 
     const handleAnalyze = async () => {
         setLoading(true);
@@ -151,20 +155,34 @@ const OpportunityCard = ({ item, type, isRecommended }) => {
                 </a>
             </div>
 
-            <Modal isOpen={modalOpen} onClose={() => setModalOpen(false)} title="Skill Match Analysis">
-                <div style={{ textAlign: 'left' }}>
-                    {analysis && !analysis.error ? (
-                        <div style={{ whiteSpace: 'pre-wrap', lineHeight: '1.6', color: '#334155' }}>
-                            {typeof analysis === 'string' ? analysis : JSON.stringify(analysis, null, 2)}
-                        </div>
-                    ) : (
-                        <div style={{ padding: '2rem', textAlign: 'center', color: '#64748b' }}>
-                            {analysis?.error || "Unable to retrieve analysis."}
-                        </div>
+            {/* Modal for Analysis */}
+            <Modal
+                isOpen={modalOpen}
+                onClose={() => setModalOpen(false)}
+                title="Skill Match Analysis"
+                className="dark-modal"
+            >
+                <SkillAnalysisModalContent analysis={analysis} />
+
+                <div style={{ marginTop: '0.5rem', textAlign: 'right', padding: '0 0.5rem 1rem' }}>
+                    <button
+                        onClick={() => setModalOpen(false)}
+                        className="btn-secondary"
+                        style={{
+                            background: 'rgba(255,255,255,0.1)',
+                            color: 'white',
+                            border: '1px solid rgba(255,255,255,0.2)'
+                        }}
+                    >
+                        Close
+                    </button>
+                    {displayType !== 'hackathon' && (
+                        <a href={applyLink} target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'none', marginLeft: '1rem' }}>
+                            <button className="btn-primary" style={{ padding: '0.5rem 1.5rem' }}>
+                                Apply Now
+                            </button>
+                        </a>
                     )}
-                </div>
-                <div style={{ marginTop: '2rem', textAlign: 'right' }}>
-                    <button onClick={() => setModalOpen(false)} className="btn-secondary">Close</button>
                 </div>
             </Modal>
         </div>
