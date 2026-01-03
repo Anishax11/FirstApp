@@ -1,35 +1,67 @@
-import React from 'react';
-import './About.css';
-
 const About = () => {
     return (
         <div className="about-page">
-            <div className="mission-card">
-                <h1 className="about-title">SkillLens</h1>
-                <p className="about-description">
-                    We bridge the gap between talented students and real-world opportunities. <br />
-                    SkillLens isn't just a job board—it's your intelligent career companion that helps you
-                    <span className="highlight"> discover, analyze, and achieve</span> your goals.
-                </p>
+            {/* Hero Section */}
+            <section className="about-hero">
+                <div className="about-hero-content">
+                    <h1 className="about-title">Revolutionizing Early Career Discovery</h1>
+                    <p className="about-subtitle">SkillLens acts as the intelligent bridge between academic potential and industry reality.</p>
+                </div>
+            </section>
 
-                <div className="features-grid">
-                    <div className="feature-card">
-                        <div className="feature-icon">🚀</div>
-                        <h3 className="feature-title">Smart Matching</h3>
-                        <p className="feature-text">AI-driven recommendations tailored specifically to your unique skill profile and career interests.</p>
+            {/* The Challenge Section */}
+            <section className="about-section alt-bg">
+                <div className="section-container">
+                    <div className="text-content">
+                        <h2>The Challenge</h2>
+                        <p>
+                            Every year, millions of talented students miss out on opportunities simply because they don't know exactly what the industry is looking for.
+                            Resumes get lost in black holes, and "apply & pray" has become the standard strategy.
+                        </p>
                     </div>
-                    <div className="feature-card">
-                        <div className="feature-icon">📊</div>
-                        <h3 className="feature-title">Skill Analysis</h3>
-                        <p className="feature-text">Get instant, detailed feedback on how well your resume fits a role and what you need to learn.</p>
-                    </div>
-                    <div className="feature-card">
-                        <div className="feature-icon">🌐</div>
-                        <h3 className="feature-title">One Hub</h3>
-                        <p className="feature-text">Internships and hackathons combined in a single, seamless view so you never miss an opportunity.</p>
+                    <div className="visual-content">
+                        <div className="stat-card">
+                            <span className="stat-number">70%</span>
+                            <span className="stat-label">of resumes are rejected by ATS before a human sees them.</span>
+                        </div>
                     </div>
                 </div>
-            </div>
+            </section>
+
+            {/* The Solution Grid */}
+            <section className="about-section">
+                <div className="section-container column-layout">
+                    <h2>Our Solution</h2>
+                    <div className="about-grid">
+                        <div className="about-card vision">
+                            <div className="card-icon">👁️</div>
+                            <h3>AI Analysis</h3>
+                            <p>We don't just read words; we understand skills. Our AI extracts and maps your potential to real-world demands.</p>
+                        </div>
+                        <div className="about-card solution">
+                            <div className="card-icon">💡</div>
+                            <h3>Instant Feedback</h3>
+                            <p>Stop guessing. Get immediate insights on missing skills and a personalized roadmap to close the gap.</p>
+                        </div>
+                        <div className="about-card why">
+                            <div className="card-icon">🚀</div>
+                            <h3>Precision Matching</h3>
+                            <p>We highlight opportunities where you are a &gt;80% match, so you can apply with confidence.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            {/* Mission / Bottom */}
+            <section className="about-section mission-section">
+                <div className="mission-content">
+                    <h2>Our Mission</h2>
+                    <p>
+                        To democratize career growth by providing every student, regardless of their background,
+                        the data-driven tools they need to succeed in a tech-driven world.
+                    </p>
+                </div>
+            </section>
         </div>
     );
 };

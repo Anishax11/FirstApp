@@ -1,23 +1,29 @@
 /* OpportunityCard.css */
 .opportunity-card {
-    background: #ffffff;
-    border: 1px solid #e2e8f0;
-    /* Slate-200 */
-    border-radius: 12px;
+    background: rgba(30, 41, 59, 0.6);
+    /* Slate-800 with Glassmorphism */
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 16px;
     padding: 24px;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05), 0 1px 2px rgba(0, 0, 0, 0.06);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2), 0 2px 4px -1px rgba(0, 0, 0, 0.1);
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     display: flex;
     flex-direction: column;
     height: 100%;
     position: relative;
     overflow: hidden;
+    color: var(--text-main);
 }
 
 .opportunity-card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-    border-color: #cbd5e1;
+    transform: translateY(-5px);
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 0 15px rgba(59, 130, 246, 0.15);
+    /* Blue glow */
+    border-color: rgba(59, 130, 246, 0.4);
+    /* Blue border highlight */
+    background: rgba(30, 41, 59, 0.8);
 }
 
 .opportunity-card.with-badge {
@@ -26,8 +32,10 @@
 
 /* Recommended Highlight */
 .opportunity-card.recommended {
-    border: 1px solid #818cf8;
-    background: linear-gradient(to bottom, #ffffff, #f5f3ff);
+    border: 1px solid rgba(16, 185, 129, 0.3);
+    /* Subtle Green Border */
+    background: linear-gradient(to bottom, rgba(30, 41, 59, 0.7), rgba(6, 78, 59, 0.2));
+    /* Dark to Dark Green tint */
 }
 
 .opportunity-card.recommended::before {
@@ -37,7 +45,57 @@
     left: 0;
     width: 4px;
     height: 100%;
-    background: #4f46e5;
+    background: #10b981;
+    /* Emerald-500 */
+    box-shadow: 0 0 10px rgba(16, 185, 129, 0.5);
+}
+
+/* Action Buttons */
+.card-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 1.25rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    gap: 0.75rem;
+    margin-top: auto;
+}
+
+.btn-secondary {
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #cbd5e1;
+    font-size: 0.875rem;
+    font-weight: 500;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    transition: all 0.2s;
+    cursor: pointer;
+}
+
+.btn-secondary:hover {
+    color: white;
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.2);
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+    color: white;
+    font-size: 0.875rem;
+    font-weight: 600;
+    padding: 0.5rem 1.25rem;
+    border-radius: 8px;
+    border: none;
+    transition: all 0.2s;
+    cursor: pointer;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2);
+}
+
+.btn-primary:hover {
+    background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+    box-shadow: 0 0 15px rgba(59, 130, 246, 0.4);
+    transform: translateY(-1px);
 }
 
 /* Header Section */
@@ -45,42 +103,46 @@
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.75rem;
     gap: 1rem;
 }
 
 .card-title {
-    font-size: 1.125rem;
+    font-size: 1.25rem;
     font-weight: 700;
-    color: #1e293b;
+    color: #f8fafc;
+    /* White text */
     line-height: 1.4;
     margin: 0;
     letter-spacing: -0.01em;
 }
 
 .type-badge {
-    color: #475569;
     font-size: 0.7rem;
-    font-weight: 600;
+    font-weight: 700;
     text-transform: uppercase;
-    padding: 4px 8px;
+    padding: 4px 10px;
     border-radius: 6px;
     letter-spacing: 0.05em;
     flex-shrink: 0;
-    border: 1px solid #e2e8f0;
-    background: #f8fafc;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(4px);
 }
 
 .type-badge.internship {
-    background: #eff6ff;
-    color: #2563eb;
-    border-color: #dbeafe;
+    background: rgba(59, 130, 246, 0.15);
+    /* Blue-500 low opacity */
+    color: #60a5fa;
+    /* Blue-400 */
+    border-color: rgba(59, 130, 246, 0.3);
 }
 
 .type-badge.hackathon {
-    background: #fdf2f8;
-    color: #db2777;
-    border-color: #fce7f3;
+    background: rgba(236, 72, 153, 0.15);
+    /* Pink-500 low opacity */
+    color: #f472b6;
+    /* Pink-400 */
+    border-color: rgba(236, 72, 153, 0.3);
 }
 
 /* Meta Info */
@@ -92,9 +154,10 @@
 }
 
 .company-name {
-    font-size: 0.9rem;
+    font-size: 0.95rem;
     font-weight: 500;
-    color: #475569;
+    color: #cbd5e1;
+    /* Slate-300 */
     display: flex;
     align-items: center;
     gap: 0.5rem;
@@ -102,7 +165,8 @@
 
 .meta-dates {
     font-size: 0.85rem;
-    color: #64748b;
+    color: #94a3b8;
+    /* Slate-400 */
     display: flex;
     align-items: center;
     gap: 0.5rem;
@@ -110,8 +174,9 @@
 
 /* Description */
 .card-description {
-    font-size: 0.925rem;
-    color: #64748b;
+    font-size: 0.95rem;
+    color: #94a3b8;
+    /* Slate-400 */
     line-height: 1.6;
     margin-bottom: 1.5rem;
     display: -webkit-box;
@@ -131,92 +196,56 @@
 }
 
 .skill-pill {
-    background: #f1f5f9;
-    color: #334155;
+    background: rgba(255, 255, 255, 0.05);
+    color: #e2e8f0;
+    /* Slate-200 */
     font-size: 0.75rem;
     font-weight: 600;
-    padding: 4px 10px;
+    padding: 6px 14px;
     border-radius: 9999px;
-    border: 1px solid transparent;
+    border: 1px solid rgba(255, 255, 255, 0.1);
     transition: all 0.2s ease;
 }
 
 .skill-pill:hover {
-    background: #e2e8f0;
-    border-color: #cbd5e1;
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.3);
+    color: #ffffff;
 }
 
 /* "Recommended" Badge (Top-left pill) */
+/* "Recommended" Badge (Top-right pill) */
 .recommended-badge {
     position: absolute;
-    top: 14px;
-    left: 16px;
-    background-color: #ecfdf5;
-    color: #059669;
-    font-size: 0.7rem;
+    top: 12px;
+    right: 12px;
+    /* Moves to top-right */
+    left: auto;
+    /* Reset left */
+    background-color: #10b981;
+    /* Emerald-500 */
+    color: #ffffff;
+    font-size: 0.75rem;
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.05em;
     padding: 6px 12px;
     border-radius: 9999px;
-    border: 1px solid #a7f3d0;
-    z-index: 2;
+    border: 1px solid #059669;
+    z-index: 5;
     line-height: 1;
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+    box-shadow: 0 0 10px rgba(16, 185, 129, 0.4);
+    /* Glow */
 }
 
-/* Action Buttons */
-.card-actions {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding-top: 1.25rem;
-    border-top: 1px solid #f1f5f9;
-    gap: 0.75rem;
-    margin-top: auto;
-}
-
-.btn-secondary {
-    background: transparent;
-    border: none;
-    color: #64748b;
-    font-size: 0.875rem;
-    font-weight: 500;
-    padding: 0.5rem 0.75rem;
-    border-radius: 6px;
-    transition: color 0.2s;
-    cursor: pointer;
-}
-
-.btn-secondary:hover {
-    color: #1e293b;
-    background: #f8fafc;
-}
-
-.btn-primary {
-    background-color: #2563eb;
-    color: white;
-    font-size: 0.875rem;
-    font-weight: 500;
-    padding: 0.5rem 1.25rem;
-    border-radius: 8px;
-    border: none;
-    transition: background-color 0.2s;
-    cursor: pointer;
-}
-
-.btn-primary:hover {
-    background-color: #1d4ed8;
-}
-
-/* Spinner */
+/* Spinner (Keep Spinner) */
 .spinner {
     display: inline-block;
     width: 14px;
     height: 14px;
-    border: 2px solid rgba(0, 0, 0, 0.1);
+    border: 2px solid rgba(255, 255, 255, 0.3);
     border-radius: 50%;
-    border-top-color: currentColor;
+    border-top-color: #fff;
     animation: spin 1s ease-in-out infinite;
     margin-right: 8px;
 }

@@ -29,7 +29,7 @@
 }
 
 .loader {
-    border: 3px solid #e2e8f0;
+    border: 3px solid rgba(255, 255, 255, 0.1);
     border-top: 3px solid var(--primary);
     border-radius: 50%;
     width: 40px;
@@ -50,9 +50,12 @@
 .empty-state {
     text-align: center;
     padding: 4rem;
-    background: #f9fafb;
+    background: rgba(30, 41, 59, 0.4);
+    /* Dark Slate glass */
+    border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: 16px;
-    color: #6b7280;
+    color: #94a3b8;
+    /* Slate-400 */
 }
 
 .error-message {

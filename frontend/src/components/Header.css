@@ -1,16 +1,20 @@
 /* Header.css */
+/* Header.css */
 .header {
-    background: rgba(255, 255, 255, 0.95);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
+    background: rgba(15, 23, 42, 0.85);
+    /* Dark Slate with opacity */
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
     height: 70px;
     width: 100%;
     position: sticky;
     top: 0;
     z-index: 100;
-    border-bottom: 1px solid var(--border-subtle);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    /* Subtle light border */
     display: flex;
     align-items: center;
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
 }
 
 .header-content {
@@ -34,12 +38,14 @@
     font-size: 1.5rem;
     font-weight: 800;
     letter-spacing: -0.05em;
-    color: #1e293b;
+    color: #ffffff;
+    /* White text for dark navbar */
     margin: 0;
 }
 
 .logo span {
-    color: var(--primary);
+    color: #06b6d4;
+    /* Cyan for tech accent */
 }
 
 /* Navigation - Centered */
@@ -54,22 +60,26 @@
 
 .nav-link {
     text-decoration: none;
-    color: var(--text-muted);
+    color: #94a3b8;
+    /* Light Slate */
     font-weight: 500;
     font-size: 0.95rem;
-    transition: color 0.2s ease;
+    transition: all 0.2s ease;
     padding: 0.5rem 0;
     position: relative;
 }
 
 .nav-link:hover {
-    color: var(--text-main);
+    color: #f8fafc;
+    /* Almost White */
+    text-shadow: 0 0 8px rgba(255, 255, 255, 0.3);
 }
 
 .nav-link.active {
-    color: var(--primary);
+    color: #ffffff;
     font-weight: 600;
 }
+
 
 /* Authentication */
 .auth-buttons {
@@ -121,12 +131,11 @@
     height: 38px;
     border-radius: 50%;
     overflow: hidden;
-    background: #e2e8f0;
-    border: 2px solid white;
+    background: #1e293b;
+    border: 2px solid #334155;
     box-shadow: 0 0 0 1px var(--border-subtle);
     transition: transform 0.2s;
     display: flex;
-    /* Changed from block to flex for centering content */
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
@@ -134,6 +143,7 @@
 
 .profile-icon:hover {
     transform: scale(1.05);
+    border-color: var(--primary);
     box-shadow: 0 0 0 2px var(--primary);
 }
 
@@ -157,25 +167,23 @@
 
 .logout-btn {
     background: transparent;
-    border: 1px solid var(--border-subtle);
-    color: var(--text-muted);
+    border: 1px solid #475569;
+    color: #cbd5e1;
     font-size: 0.85rem;
     font-weight: 600;
     cursor: pointer;
     padding: 0.5rem 1rem;
     border-radius: 99px;
-    /* Pill shape */
     display: flex;
     align-items: center;
     transition: all 0.2s ease;
     height: 36px;
-    /* Match similar height visual */
 }
 
 .logout-btn:hover {
-    color: var(--accent-error);
-    background-color: #fef2f2;
-    border-color: #fecaca;
+    color: #f8fafc;
+    background-color: rgba(255, 255, 255, 0.1);
+    border-color: #94a3b8;
 }
 
 /* Responsive */

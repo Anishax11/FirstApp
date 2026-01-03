@@ -40,7 +40,7 @@ const OpportunityCard = ({ item, type, isRecommended }) => {
     const [error, setError] = useState(null);
 
     const matchPercentage = calculateMatchPercentage(userData?.skills, skills);
-    const isSkillRecommended = matchPercentage > 75;
+    const isSkillRecommended = matchPercentage >= 80;
 
     const handleAnalyze = async () => {
         setLoading(true);

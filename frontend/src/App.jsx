@@ -12,6 +12,7 @@ import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import { AuthProvider } from './contexts/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
+import Landing from './pages/Landing';
 
 function App() {
   return (
@@ -22,6 +23,7 @@ function App() {
           <main className="main-content">
             <Routes>
               {/* Public Routes */}
+              <Route path="/" element={<Landing />} />
               <Route path="/login" element={<Login />} />
               <Route path="/signup" element={<Signup />} />
               <Route path="/about" element={<About />} />
@@ -31,7 +33,7 @@ function App() {
 
               {/* Protected Routes */}
               <Route element={<ProtectedRoute />}>
-                <Route path="/" element={<InternshipList />} />
+                {/* <Route path="/" element={<InternshipList />} />  Removing generic root protection in favor of explicit public landing */}
                 <Route path="/profile" element={<Profile />} />
               </Route>
             </Routes>
