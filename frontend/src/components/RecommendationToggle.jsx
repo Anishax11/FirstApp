@@ -24,4 +24,6 @@ const RecommendationToggle = ({ showRecommended, setShowRecommended }) => {
     );
 };
 
+
 export default RecommendationToggle;
+

@@ -1,4 +1,5 @@
-export const BASE_URL = 'http://localhost:3000';
+export const BASE_URL = 'https://skill-opportunity-backend.vercel.app';
+
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 
 export const fetchInternships = async () => {
@@ -11,6 +12,7 @@ export const fetchInternships = async () => {
   console.log('Internships received:', data);
   return data;
 };
+
 
 export const fetchHackathons = async () => {
   console.log('Fetching hackathons from backend...');
@@ -39,7 +41,7 @@ export const fetchMatchingHackathons = async () => {
     const token = await user.getIdToken();
 
     const response = await fetch(
-      `${BASE_URL}/matching_hackathons`,
+      `${BASE_URL}/matchingHackathons`,
       {
         method: "GET",
         headers: {
@@ -74,7 +76,7 @@ export const fetchMatchingInternships = async () => {
 
     const token = await user.getIdToken();
 
-    const response = await fetch("http://localhost:3000/matching_internships", {
+    const response = await fetch(`${BASE_URL}/matchingInternships`, {
       method: "GET",
       headers: {
         "Authorization": `Bearer ${token}`,

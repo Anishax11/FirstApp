@@ -74,14 +74,14 @@ const Profile = () => {
         setUploading(true);
         const file = e.target.files[0];
         if (!file) { setUploading(false); return; }
-
+    
         try {
             const auth = getAuth();
             const token = await auth.currentUser.getIdToken();
-
+    
             const formData = new FormData();
             formData.append("resume", file);
-
+    
             const res = await fetch(`${BASE_URL}/upload-resume`, {
                 method: "POST",
                 headers: {
@@ -89,17 +89,15 @@ const Profile = () => {
                 },
                 body: formData,
             });
-
+    
             const data = await res.json();
             console.log("Upload response:", data);
-
+    
             if (data.success) {
-                // Update local state with extracted skills and flag
                 if (data.extractedSkills && data.extractedSkills.length > 0) {
                     setUserData(prev => ({
                         ...prev,
-                        resumeText: "resume extracted", // optimistic update to hide banner
-                        // Merge skills unique
+                        resumeText: "resume extracted",
                         skills: Array.from(new Set([...(prev.skills || []), ...data.extractedSkills]))
                     }));
                     alert(`Resume uploaded! Found ${data.extractedSkills.length} skills.`);
@@ -117,15 +115,13 @@ const Profile = () => {
             setUploading(false);
         }
     };
-
+    
     const handleRemoveSkill = async (skillToRemove) => {
         try {
             const userRef = doc(db, "users", user.uid);
-            // Updating backend
             await updateDoc(userRef, {
                 skills: arrayRemove(skillToRemove)
             });
-            // Updating local UI
             setUserData(prev => ({
                 ...prev,
                 skills: prev.skills.filter(s => s !== skillToRemove)
@@ -134,6 +130,7 @@ const Profile = () => {
             console.error("Error removing skill:", error);
         }
     };
+    
 
     const handleAddSkills = async () => {
         if (!skillInput.trim()) return;

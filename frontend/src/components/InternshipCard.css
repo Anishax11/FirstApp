@@ -1,4 +1,5 @@
 .internship-card {
+
     background: white;
     border-radius: 16px;
     padding: 1.75rem;
@@ -59,6 +60,7 @@
 
 .company-name,
 .organizer {
+
     color: #6b7280;
     font-weight: 600;
     font-size: 0.9rem;
@@ -111,21 +113,22 @@
 
 .skill-tag:hover {
     background-color: #e5e7eb;
+
 }
 
 
 .apply-btn {
-    background: linear-gradient(135deg, #2563eb, #7c3aed);
-    color: white;
-    border: none;
-    padding: 0.75rem;
-    border-radius: 12px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: opacity 0.2s;
-    width: 100%;
+  background: linear-gradient(135deg, #2563eb, #7c3aed);
+  color: white;
+  border: none;
+  padding: 0.75rem;
+  border-radius: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.2s;
+  width: 100%;
 }
 
 .apply-btn:hover {
-    opacity: 0.9;
+  opacity: 0.9;
 }

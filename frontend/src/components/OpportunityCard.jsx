@@ -2,8 +2,14 @@ import React, { useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { getAuth } from 'firebase/auth';
 import Modal from './Modal';
+
+
+import {BASE_URL} from "../api";
+
 import SkillAnalysisModalContent from './SkillAnalysisModalContent';
+
 import './OpportunityCard.css';
+
 
 const calculateMatchPercentage = (userSkills = [], requiredSkills = []) => {
     if (!userSkills.length || !requiredSkills.length) return 0;
@@ -40,6 +46,7 @@ const OpportunityCard = ({ item, type, isRecommended }) => {
     const [modalOpen, setModalOpen] = useState(false);
     const [error, setError] = useState(null);
 
+
     const matchPercentage = calculateMatchPercentage(userData?.skills, skills);
     const isSkillRecommended = matchPercentage >= 70;
 
@@ -58,7 +65,7 @@ const OpportunityCard = ({ item, type, isRecommended }) => {
 
         try {
             const token = await user.getIdToken();
-            const response = await fetch(`http://localhost:3000/analysis`, {
+            const response = await fetch(`${BASE_URL}/analysis`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -92,6 +99,7 @@ const OpportunityCard = ({ item, type, isRecommended }) => {
     };
 
     return (
+
         <div className={`opportunity-card ${isRecommended ? 'recommended' : ''} ${isSkillRecommended ? 'with-badge' : ''}`}>
             {isSkillRecommended && (
                 <span className="recommended-badge">
